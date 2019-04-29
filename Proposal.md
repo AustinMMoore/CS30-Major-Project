@@ -11,6 +11,7 @@ Chamber of Echoes is a turn based deck building card game in which you encounter
 5. Monster combat
 6. Functional deck and hand with cards
 7. Turn based gameplay
+8. Basic art for cards / buttons / backgrounds
 
 
 ## Nice to Have List:
@@ -19,3 +20,5 @@ Chamber of Echoes is a turn based deck building card game in which you encounter
 2. EXP / Level system
 3. Larger boss type enemies
 4. Encounter map (levels)
+5. More improved artwork
+6. Exchangable cards in deck (add / remove through mechanics)
