@@ -230,12 +230,20 @@ function cardSetup() {
   cardLocationFive = new Card(width * (5/15), height * (5/6), 5);
   cardLocationSix = new Card(width * (6/15), height * (5/6), 6);
   cardLocationSeven = new Card(width * (7/15), height * (5/6), 7);
+
+  cardLocationOne.setupCardInfo();
+  cardLocationTwo.setupCardInfo();
+  cardLocationThree.setupCardInfo();
+  cardLocationFour.setupCardInfo();
+  cardLocationFive.setupCardInfo();
+  cardLocationSix.setupCardInfo();
+  cardLocationSeven.setupCardInfo();
 }
 
 function cardStatSetup() {
   heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", 10];
   lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", 5];
-  flayAttack = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "reaper", ceil(random(4, 8))];
+  flayAttack = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", ceil(random(4, 8))];
 }
 
 function monsterSetup() {
@@ -385,17 +393,23 @@ function drawCard(drawNumber) {
   }
   let handListDisplay = [];
   for (let i = 0; i < cardHandList.length; i++) {
-    handListDisplay.push(cardHandList[i].cardName);
+    handListDisplay.push(cardHandList[i][2]);
   }
-  console.log("Hand: " + handListDisplay);
+  console.log("Hand List: " + handListDisplay);
   let deckListDisplay = [];
   for (let i = 0; i < cardDeckList.length; i++) {
-    deckListDisplay.push(cardDeckList[i].cardName);
+    deckListDisplay.push(cardDeckList[i][2]);
   }
-  console.log("Deck: " + deckListDisplay);
+  console.log("Deck List: " + deckListDisplay);
 
   for (let i = 0; i < cardHandList.length; i++) {
     cardLocationList[i] = cardHandList[i];
+  }
+
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardLocationList[i].cardInfo = cardHandList[i];
+    // console.log(cardLocationList[i].cardInfo);
+    // console.log(cardHandList[i]);
   }
 }
 
@@ -445,6 +459,7 @@ class Card {
     this.scalar = cardScalar;
     this.cardID = cardID;
     this.newCardType = this.cardType;
+    // this.isAssigned = false;
   }
 
   //zooms in on the card when the mouse is hovering over it but not clicked
@@ -512,19 +527,23 @@ class Card {
     return this.isSelected() && mouseIsPressed;
   }
 
-  showCardInfo(colour, cost, name, cardText, rarity, effectOne, effectTwo, effectThree) {
-    this.cardType = colour;
-    this.cardCost = cost;
-    this.cardName = name;
-    this.cardText = cardText;
-    this.cardRarity = rarity;
-    this.cardEffectOne = effectOne;
-    this.cardEffectTwo = effectTwo;
-    this.cardEffectThree = effectThree;
+  setupCardInfo() {
+    this.cardInfo = []
+  }
 
-    text(cost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
-    text(name);
-    text(cardText);
+  showCardInfo() {
+    this.cardType = this.cardInfo[0];
+    this.cardCost = this.cardInfo[1];
+    this.cardName = this.cardInfo[2];
+    this.cardText = this.cardInfo[3];
+    this.cardRarity = this.cardInfo[4];
+    this.cardEffectOne = this.cardInfo[5];
+    // this.cardEffectTwo = cardInfo[1];
+    // this.cardEffectThree = cardInfo[1];
+
+    text(this.cardCost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
+    text(this.cardName);
+    text(this.cardText);
   }
 
   //function that calls all of the card's behaviors
