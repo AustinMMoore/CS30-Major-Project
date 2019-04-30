@@ -381,6 +381,8 @@ function reshuffleDeck() {
   //console.log(cardDeckList);
 }
 
+//function that adds card from the deck into the player's hand
+//Currently logs all of the array info into the console as evidence that each card attains and maintains its card values
 function drawCard(drawNumber) {
   for (let i = 0; i < drawNumber; i++) {
     if (cardHandList.length === 7) {
@@ -408,11 +410,25 @@ function drawCard(drawNumber) {
 
   for (let i = 0; i < cardHandList.length; i++) {
     cardLocationList[i].cardInfo = cardHandList[i];
-    // console.log(cardLocationList[i].cardInfo);
-    // console.log(cardHandList[i]);
+    console.log(cardLocationList[i].cardInfo);
+    console.log(cardHandList[i][0]);
   }
+
+  assignHandValues();
 }
 
+
+function assignHandValues() {
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardLocationList[i].cardtype = cardLocationList[i].cardInfo[0];
+    cardLocationList[i].cardCost = cardLocationList[i].cardInfo[1];
+    cardLocationList[i].cardName = cardLocationList[i].cardInfo[2];
+    cardLocationList[i].cardText = cardLocationList[i].cardInfo[3];
+    cardLocationList[i].cardRarity = cardLocationList[i].cardInfo[4];
+    cardLocationList[i].cardEffectOne = cardLocationList[i].cardInfo[5];
+  }
+  // console.log(cardLocationList[0].cardInfo[0]);
+}
 /* 
 - upkeepStep
 - drawStep
@@ -458,7 +474,7 @@ class Card {
     this.cardType; //cardColourList[floor(random(5))];
     this.scalar = cardScalar;
     this.cardID = cardID;
-    this.newCardType = this.cardType;
+    // this.newCardType = this.cardType;
     // this.isAssigned = false;
   }
 
@@ -475,26 +491,24 @@ class Card {
   //displays the card in the correct suit, position, and size
   showCard() {
     fill(100);
-    if (cardInHand && draggingCardID === this.cardID && colourChange) {
-      this.cardType = newCardType;
-      colourChange = false;
-    }
-
-    this.cardtype = "blue";
+    // if (cardInHand && draggingCardID === this.cardID && colourChange) {
+    //   this.cardType = newCardType;
+    //   colourChange = false;
+    // }
     if (this.cardType === "white"){
       image(whiteCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else if (this.cardType === "blue") {
-      image(blueCard, this.x, this.y, this.width * this.scalar, this. height * this.scalar);
+      image(blueCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else if (this.cardType === "green") {
-      image(greenCard, this.x, this.y, this.width * this.scalar, this. height * this.scalar);
+      image(greenCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else if (this.cardType === "red") {
-      image(redCard, this.x, this.y, this.width * this.scalar, this. height * this.scalar);
+      image(redCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else if (this.cardType === "yellow") {
-      image(yellowCard, this.x, this.y, this.width * this.scalar, this. height * this.scalar);
+      image(yellowCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else {
       rect(this.x, this.y, this.width * this.scalar, this.height * this.scalar);
@@ -528,19 +542,10 @@ class Card {
   }
 
   setupCardInfo() {
-    this.cardInfo = []
+    this.cardInfo = [];
   }
 
   showCardInfo() {
-    this.cardType = this.cardInfo[0];
-    this.cardCost = this.cardInfo[1];
-    this.cardName = this.cardInfo[2];
-    this.cardText = this.cardInfo[3];
-    this.cardRarity = this.cardInfo[4];
-    this.cardEffectOne = this.cardInfo[5];
-    // this.cardEffectTwo = cardInfo[1];
-    // this.cardEffectThree = cardInfo[1];
-
     text(this.cardCost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
     text(this.cardName);
     text(this.cardText);
