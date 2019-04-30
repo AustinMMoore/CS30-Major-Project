@@ -420,7 +420,7 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    cardLocationList[i].cardtype = cardLocationList[i].cardInfo[0];
+    cardLocationList[i].cardType = cardLocationList[i].cardInfo[0];
     cardLocationList[i].cardCost = cardLocationList[i].cardInfo[1];
     cardLocationList[i].cardName = cardLocationList[i].cardInfo[2];
     cardLocationList[i].cardText = cardLocationList[i].cardInfo[3];
@@ -490,11 +490,6 @@ class Card {
 
   //displays the card in the correct suit, position, and size
   showCard() {
-    fill(100);
-    // if (cardInHand && draggingCardID === this.cardID && colourChange) {
-    //   this.cardType = newCardType;
-    //   colourChange = false;
-    // }
     if (this.cardType === "white"){
       image(whiteCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
@@ -511,6 +506,7 @@ class Card {
       image(yellowCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else {
+      fill(100);
       rect(this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
   }
