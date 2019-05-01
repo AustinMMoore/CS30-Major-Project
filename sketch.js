@@ -43,6 +43,8 @@ function preload() {
   spikySlimeMonsterImage = loadImage("assets/monsters/spikySlime.png");
   dizzyMonsterImage = loadImage("assets/monsters/dizzy.png");
   fireDemonMonsterImage = loadImage("assets/monsters/fireDemon.png");
+
+  standardCursor = loadImage("assets/cursors/standard.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -66,6 +68,8 @@ function setup() {
   cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack,flayAttack, flayAttack, flayAttack];
 
   cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
+
+  cursorSpriteList = [standardCursor];
 }
 
 //setup all the variables
@@ -98,6 +102,10 @@ let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardL
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
 
+let standardCursor;
+let cursorSpriteList;
+let cursorMode = "standard";
+
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
@@ -128,6 +136,7 @@ let turnCounter = 0;
 //main draw loop of the code
 function draw() {
   checkMute();
+  cursorSprite();
   background(backgroundColour);
   buttonSetup();
   displayMenu();
@@ -293,6 +302,12 @@ function keyPressed() {
   if (key === " ") {
     monstersSpawned = false;
     nextTurn();
+  }
+}
+
+function cursorSprite() {
+  if (cursorMode === "standard") {
+    cursor(blueButton, 31, 31);
   }
 }
 
