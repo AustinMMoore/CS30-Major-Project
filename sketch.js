@@ -45,6 +45,7 @@ function preload() {
   fireDemonMonsterImage = loadImage("assets/monsters/fireDemon.png");
 
   standardCursor = loadImage("assets/cursors/standard.png");
+  targetCursor = loadImage("assets/cursors/target.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -53,6 +54,7 @@ function setup() {
   rectMode(CENTER);
   textAlign(CENTER);
   imageMode(CENTER);
+  noCursor();
 
   backgroundMusic.playMode("sustain");
   buttonClick.playMode("restart");
@@ -69,7 +71,7 @@ function setup() {
 
   cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
 
-  cursorSpriteList = [standardCursor];
+  cursorSpriteList = [standardCursor, targetCursor];
 }
 
 //setup all the variables
@@ -102,7 +104,7 @@ let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardL
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
 
-let standardCursor;
+let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
@@ -136,12 +138,12 @@ let turnCounter = 0;
 //main draw loop of the code
 function draw() {
   checkMute();
-  cursorSprite();
   background(backgroundColour);
   buttonSetup();
   displayMenu();
   displayGame();
   displayOptions();
+  cursorUpdate();
 }
 
 //shows the main menu screen where you can go to the Game, Options, or Quit (Check Console XD)
@@ -226,7 +228,7 @@ function buttonSetup() {
   darkOptionButton = new Button(width/2, height * (1/5), 250, 150, "Dark Theme", 30, "white",blueButtonClicked, blueButton);
   lightOptionButton = new Button(width/2, height * (2/5), 250, 150, "Light Theme", 30, "white", blueButtonClicked, blueButton);
   soundOptionButton = new Button(width/2, height * (3/5), 250, 150, "Toggle Sound", 30, "white", blueButtonClicked, blueButton);
-  backOptionButton = new Button(width/2, height * (4/5), 250, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  backOptionButton = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
   backPlayButton = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
 }
 
@@ -305,10 +307,30 @@ function keyPressed() {
   }
 }
 
-function cursorSprite() {
-  if (cursorMode === "standard") {
-    cursor(blueButton, 31, 31);
+function cursorUpdate() {
+  imageMode(CORNER);
+  if (cardInHand === true && mouseX >= this.x - this.width/2 && mouseX <= this.x + this.width/2 && mouseY >= this.y - this.height/2 && mouseY <= this.y + this.height/2) {
+    cursorMode = "target";
   }
+  if (cardInHand === true) {
+    console.log("cardInHand");
+    cursorMode = "cardInHand";
+  }
+  else {
+    cursorMode = "standard";
+  }
+
+  cursorMode = "target";
+  if (cursorMode === "standard") {
+    image(standardCursor, mouseX, mouseY, 30, 50);
+  }
+  
+  else if (cursorMode === "target") {
+    imageMode(CENTER);
+    image(targetCursor, mouseX, mouseY, 40, 40);
+  }
+
+  imageMode(CENTER);
 }
 
 function spawnMonsters(spawnNumber) {
