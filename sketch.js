@@ -320,7 +320,6 @@ function cursorUpdate() {
     cursorMode = "standard";
   }
 
-  cursorMode = "target";
   if (cursorMode === "standard") {
     image(standardCursor, mouseX, mouseY, 30, 50);
   }
