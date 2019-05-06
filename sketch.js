@@ -113,6 +113,8 @@ let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMons
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
 let monsterOne, monsterTwo, monsterThree;
 let monsterList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
+let monsterImageX = 150;
+let monsterImageY = 200;
 
 let monsterLocationOne = [1/3, 1/2];
 let monsterLocationTwo = [1/2, 1/4];
@@ -129,8 +131,6 @@ let cardHandList = [];
 let cardLocationList;
 
 let lightAttack2, heavyAttack2, flayAttack2;
-
-let moo;
 
 let turnCounter = 0;
 
@@ -258,7 +258,7 @@ function cardStatSetup() {
 }
 
 function monsterSetup() {
-  chomperMonster = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend");
+  chomperMonster = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend", 200, 200);
   blueBeanMonster = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
   spikySlimeMonster = new Monster("Spiky Slime", 2, 30, 60, "Slap", "SpikeUp", "Defend");
   dizzyMonster = new Monster("Dizzy", 3, 20, 45, "Hypnosis", "Smack", "Defend");
@@ -309,21 +309,19 @@ function keyPressed() {
 
 function cursorUpdate() {
   imageMode(CORNER);
-  if (cardInHand === true && mouseX >= this.x - this.width/2 && mouseX <= this.x + this.width/2 && mouseY >= this.y - this.height/2 && mouseY <= this.y + this.height/2) {
-    cursorMode = "target";
-  }
   if (cardInHand === true) {
     console.log("cardInHand");
     cursorMode = "cardInHand";
   }
+  if (mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY && mouseY <= monsterLocationOne[1] + monsterImageY) {
+    cursorMode = "target";
+  }
   else {
     cursorMode = "standard";
   }
-
   if (cursorMode === "standard") {
     image(standardCursor, mouseX, mouseY, 30, 50);
   }
-  
   else if (cursorMode === "target") {
     imageMode(CENTER);
     image(targetCursor, mouseX, mouseY, 40, 40);
@@ -395,15 +393,15 @@ function spawnMonsters(spawnNumber) {
 
   monsterOne.xPosition = width * monsterLocationOne[0]; 
   monsterOne.yPosition = height * monsterLocationOne[1];
-  image(monsterOne.monsterImage, monsterOne.xPosition, monsterOne.yPosition);
+  image(monsterOne.monsterImage, monsterOne.xPosition, monsterOne.yPosition, monsterImageX, monsterImageY);
 
   monsterTwo.xPosition = width * monsterLocationTwo[0]; 
   monsterTwo.yPosition = height * monsterLocationTwo[1];
-  image(monsterTwo.monsterImage, monsterTwo.xPosition, monsterTwo.yPosition);
+  image(monsterTwo.monsterImage, monsterTwo.xPosition, monsterTwo.yPosition, monsterImageX, monsterImageY);
 
   monsterThree.xPosition = width * monsterLocationThree[0]; 
   monsterThree.yPosition = height * monsterLocationThree[1];
-  image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition);
+  image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
 }
 
 function shuffleDeck() {
@@ -641,7 +639,7 @@ class Button {
 
 class Monster {
 
-  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree) {
+  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, ImageX, ImageY) {
     this.monsterName = name;
     this.monsterImage = monsterSpriteList[imageNumber];
     this.monsterHealth = health;
@@ -651,5 +649,7 @@ class Monster {
     this.monsterAttackThree = attackThree;
     this.xPosition = 0;
     this.yPosition = 0;
+    this.ImageX = ImageX;
+    this.ImageY = ImageY;
   }
 }
