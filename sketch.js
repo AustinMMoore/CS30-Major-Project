@@ -113,8 +113,6 @@ let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMons
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
 let monsterOne, monsterTwo, monsterThree;
 let monsterList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
-let monsterImageX = 150;
-let monsterImageY = 200;
 
 let monsterLocationOne = [1/3, 1/2];
 let monsterLocationTwo = [1/2, 1/4];
@@ -122,6 +120,7 @@ let monsterLocationThree = [2/3, 1/2];
 let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
 let monstersSpawned = false;
 let monsterType;
+let monsterImageX, monsterImageY;
 
 let heavyAttack, lightAttack, flayAttack;
 let cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack, flayAttack];
@@ -326,7 +325,6 @@ function cursorUpdate() {
     imageMode(CENTER);
     image(targetCursor, mouseX, mouseY, 40, 40);
   }
-
   imageMode(CENTER);
 }
 
@@ -463,6 +461,7 @@ function assignHandValues() {
   }
   // console.log(cardLocationList[0].cardInfo[0]);
 }
+
 /* 
 - upkeepStep
 - drawStep
