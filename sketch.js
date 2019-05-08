@@ -442,8 +442,8 @@ function drawCard(drawNumber) {
 
   for (let i = 0; i < cardHandList.length; i++) {
     cardLocationList[i].cardInfo = cardHandList[i];
-    console.log(cardLocationList[i].cardInfo);
-    console.log(cardHandList[i][0]);
+    // console.log(cardLocationList[i].cardInfo);
+    // console.log(cardHandList[i][0]);
   }
 
   assignHandValues();
@@ -452,6 +452,7 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
+    //console.log(cardLocationList[i].cardInfo[0]);
     cardLocationList[i].cardType = cardLocationList[i].cardInfo[0];
     cardLocationList[i].cardCost = cardLocationList[i].cardInfo[1];
     cardLocationList[i].cardName = cardLocationList[i].cardInfo[2];
@@ -523,6 +524,7 @@ class Card {
 
   //displays the card in the correct suit, position, and size
   showCard() {
+    //console.log(this.cardType);
     if (this.cardType === "white"){
       image(whiteCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
