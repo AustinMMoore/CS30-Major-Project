@@ -100,6 +100,8 @@ let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
 let whiteCard, blueCard, greenCard, redCard, yellowCard;
+let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
+let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
@@ -227,34 +229,42 @@ function windowResized() {
 
 //sets up the buttons used throughout the code in their according classes
 function buttonSetup() {
-  playButton = new Button(width/2, height/4, 300, 200, "Play", 40, "white", blueButtonClicked, blueButton);
-  optionsButton = new Button(width/2, height/2, 250, 150, "Options", 30, "white", blueButtonClicked, blueButton);
-  quitButton = new Button(width/2, height * (14/20), 200, 100, "Quit", 30, "white", blueButtonClicked, blueButton);
-  darkOptionButton = new Button(width/2, height * (1/5), 250, 150, "Dark Theme", 30, "white",blueButtonClicked, blueButton);
+  playButton        = new Button(width/2, height/4, 300, 200, "Play", 40, "white", blueButtonClicked, blueButton);
+  optionsButton     = new Button(width/2, height/2, 250, 150, "Options", 30, "white", blueButtonClicked, blueButton);
+  quitButton        = new Button(width/2, height * (14/20), 200, 100, "Quit", 30, "white", blueButtonClicked, blueButton);
+  darkOptionButton  = new Button(width/2, height * (1/5), 250, 150, "Dark Theme", 30, "white",blueButtonClicked, blueButton);
   lightOptionButton = new Button(width/2, height * (2/5), 250, 150, "Light Theme", 30, "white", blueButtonClicked, blueButton);
   soundOptionButton = new Button(width/2, height * (3/5), 250, 150, "Toggle Sound", 30, "white", blueButtonClicked, blueButton);
-  backOptionButton = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
-  backPlayButton = new Button(75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
-  endTurnButton = new Button(width - 100, width * (1/4), 200, 100, "End Turn", 25, "white", yellowButtonClicked, yellowButton);
+  backOptionButton  = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  backPlayButton    = new Button(75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  endTurnButton     = new Button(width - 100, width * (1/4), 200, 100, "End Turn", 25, "white", yellowButtonClicked, yellowButton);
 }
 
 //sets up the cards used in the game as separate entities
 function cardSetup() {
-  cardLocationOne = new Card(width * (1/15), height * (5/6), 1);
-  cardLocationTwo = new Card(width * (2/15), height * (5/6), 2);
-  cardLocationThree = new Card(width * (3/15), height * (5/6), 3);
-  cardLocationFour = new Card(width * (4/15), height * (5/6), 4);
-  cardLocationFive = new Card(width * (5/15), height * (5/6), 5);
-  cardLocationSix = new Card(width * (6/15), height * (5/6), 6);
-  cardLocationSeven = new Card(width * (7/15), height * (5/6), 7);
+  cardLocationOne   = [width * (1/15), height * (5/6)];
+  cardLocationTwo   = [width * (2/15), height * (5/6)];
+  cardLocationThree = [width * (3/15), height * (5/6)];
+  cardLocationFour  = [width * (4/15), height * (5/6)];
+  cardLocationFive  = [width * (5/15), height * (5/6)];
+  cardLocationSix   = [width * (6/15), height * (5/6)];
+  cardLocationSeven = [width * (7/15), height * (5/6)];
 
-  cardLocationOne.setupCardInfo();
-  cardLocationTwo.setupCardInfo();
-  cardLocationThree.setupCardInfo();
-  cardLocationFour.setupCardInfo();
-  cardLocationFive.setupCardInfo();
-  cardLocationSix.setupCardInfo();
-  cardLocationSeven.setupCardInfo();
+  cardOne   = new Card(  cardLocationOne[0],   cardLocationOne[1], 1);
+  cardTwo   = new Card(  cardLocationTwo[0],   cardLocationTwo[1], 2);
+  cardThree = new Card(cardLocationThree[0], cardLocationThree[1], 3);
+  cardFour  = new Card( cardLocationFour[0],  cardLocationFour[1], 4);
+  cardFive  = new Card( cardLocationFive[0],  cardLocationFive[1], 5);
+  cardSix   = new Card(  cardLocationSix[0],   cardLocationSix[1], 6);
+  cardSeven = new Card(cardLocationSeven[0], cardLocationSeven[1], 7);
+
+  cardInfoOne.setupCardInfo();
+  cardInfoTwo.setupCardInfo();
+  cardInfoThree.setupCardInfo();
+  cardInfoFour.setupCardInfo();
+  cardInfoFive.setupCardInfo();
+  cardInfoSix.setupCardInfo();
+  cardInfoSeven.setupCardInfo();
 }
 
 function cardStatSetup() {
@@ -264,17 +274,17 @@ function cardStatSetup() {
 }
 
 function monsterSetup() {
-  chomperMonster = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend", 200, 200);
-  blueBeanMonster = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
+  chomperMonster    = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend", 200, 200);
+  blueBeanMonster   = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
   spikySlimeMonster = new Monster("Spiky Slime", 2, 30, 60, "Slap", "SpikeUp", "Defend");
-  dizzyMonster = new Monster("Dizzy", 3, 20, 45, "Hypnosis", "Smack", "Defend");
-  fireDemonMonster = new Monster("Fire Demon", 4, 25, 55, "Burn", "Smack", "Defend");
+  dizzyMonster      = new Monster("Dizzy", 3, 20, 45, "Hypnosis", "Smack", "Defend");
+  fireDemonMonster  = new Monster("Fire Demon", 4, 25, 55, "Burn", "Smack", "Defend");
 
-  chomperMonster.monsterImage = chomperMonsterImage;
-  blueBeanMonster.monsterImage = blueBeanMonsterImage;
+  chomperMonster.monsterImage    = chomperMonsterImage;
+  blueBeanMonster.monsterImage   = blueBeanMonsterImage;
   spikySlimeMonster.monsterImage = spikySlimeMonsterImage;
-  dizzyMonster.monsterImage = dizzyMonsterImage;
-  fireDemonMonster.monsterImage = fireDemonMonsterImage;
+  dizzyMonster.monsterImage      = dizzyMonsterImage;
+  fireDemonMonster.monsterImage  = fireDemonMonsterImage;
 }
 
 //checks when the mouse is released
@@ -308,7 +318,7 @@ function checkMute() {
 function keyPressed() {
   if (key === " ") {
     monstersSpawned = false;
-    nextTurn();
+    //nextTurn();
   }
 }
 
@@ -395,15 +405,15 @@ function spawnMonsters(spawnNumber) {
     //console.log(monsterOne, monsterTwo, monsterThree);
   }
 
-  monsterOne.xPosition = width * monsterLocationOne[0]; 
+  monsterOne.xPosition = width *  monsterLocationOne[0]; 
   monsterOne.yPosition = height * monsterLocationOne[1];
   image(monsterOne.monsterImage, monsterOne.xPosition, monsterOne.yPosition, monsterImageX, monsterImageY);
 
-  monsterTwo.xPosition = width * monsterLocationTwo[0]; 
+  monsterTwo.xPosition = width *  monsterLocationTwo[0]; 
   monsterTwo.yPosition = height * monsterLocationTwo[1];
   image(monsterTwo.monsterImage, monsterTwo.xPosition, monsterTwo.yPosition, monsterImageX, monsterImageY);
 
-  monsterThree.xPosition = width * monsterLocationThree[0]; 
+  monsterThree.xPosition = width *  monsterLocationThree[0]; 
   monsterThree.yPosition = height * monsterLocationThree[1];
   image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
 }
@@ -580,7 +590,7 @@ class Card {
   }
 
   setupCardInfo() {
-    this.cardInfo = [];
+    this.cardInfo = ["empty"];
   }
 
   showCardInfo() {
