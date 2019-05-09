@@ -88,7 +88,7 @@ let buttonTextSize;
 let soundMute = false;
 let soundVolume = 0.5;
 let playingSound = false;
-let muteButtonReady = true;
+let muteButtonReady, endTurnButtonReady = true;
 
 let colourChange = false;
 let backgroundColour = "grey";
@@ -101,7 +101,7 @@ let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
 let whiteCard, blueCard, greenCard, redCard, yellowCard;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
-let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton;
+let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
 
 let standardCursor, targetCursor;
@@ -168,12 +168,18 @@ function displayMenu() {
 //shows the card game (where for now cards can be dragged around individually)
 function displayGame() {
   if (gameState === "game") {
-    image( forestBackgroundOne, width/2, height/2, width, height);
+    image(forestBackgroundOne, width/2, height/2, width, height);
     spawnMonsters(3);
     cardBehavior();
     backPlayButton.show();
+    endTurnButton.show();
     if (backPlayButton.isClicked()) {
       gameState = "menu";
+    }
+    if (endTurnButton.isClicked() && endTurnButtonReady) {
+      endTurnButtonReady = false;
+      monstersSpawned = false;
+      nextTurn();
     }
   }
 }
@@ -228,7 +234,8 @@ function buttonSetup() {
   lightOptionButton = new Button(width/2, height * (2/5), 250, 150, "Light Theme", 30, "white", blueButtonClicked, blueButton);
   soundOptionButton = new Button(width/2, height * (3/5), 250, 150, "Toggle Sound", 30, "white", blueButtonClicked, blueButton);
   backOptionButton = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
-  backPlayButton = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  backPlayButton = new Button(75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  endTurnButton = new Button(width - 100, width * (1/4), 200, 100, "End Turn", 25, "white", yellowButtonClicked, yellowButton);
 }
 
 //sets up the cards used in the game as separate entities
@@ -274,7 +281,7 @@ function monsterSetup() {
 function mouseReleased() {
   cardInHand = false;
   draggingCardID = 0;
-  muteButtonReady = true;
+  muteButtonReady, endTurnButtonReady = true;
   //monstersSpawned = false;
   //console.log(mouseX + ", " + mouseY);
 }
@@ -298,7 +305,6 @@ function checkMute() {
   deckShuffle.setVolume(soundVolume);
 }
 
-//changes the suit of the card by using "1, 2, 3, 4, 5" while dragging the card
 function keyPressed() {
   if (key === " ") {
     monstersSpawned = false;
@@ -452,7 +458,8 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    //console.log(cardLocationList[i].cardInfo[0]);
+    console.log("cardInfo = " + cardLocationList[i].cardInfo[0]);
+    console.log("cardType = " + cardLocationList[i].cardType);
     cardLocationList[i].cardType = cardLocationList[i].cardInfo[0];
     cardLocationList[i].cardCost = cardLocationList[i].cardInfo[1];
     cardLocationList[i].cardName = cardLocationList[i].cardInfo[2];
