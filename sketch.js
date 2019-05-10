@@ -69,7 +69,7 @@ function setup() {
 
   cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack,flayAttack, flayAttack, flayAttack];
 
-  cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
+  cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 
   cursorSpriteList = [standardCursor, targetCursor];
 }
@@ -129,7 +129,7 @@ let cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAtt
 let newDeckList = cardDeckList;
 let cardDiscardDeckList = [];
 let cardHandList = [];
-let cardLocationList;
+let cardList;
 
 let lightAttack2, heavyAttack2, flayAttack2;
 
@@ -213,13 +213,13 @@ function displayOptions() {
 
 //the main function to call each card's behavior
 function cardBehavior() {
-  cardLocationOne.behavior();
-  cardLocationTwo.behavior();
-  cardLocationThree.behavior();
-  cardLocationFour.behavior();
-  cardLocationFive.behavior();
-  cardLocationSix.behavior();
-  cardLocationSeven.behavior();
+  cardOne.behavior();
+  cardTwo.behavior();
+  cardThree.behavior();
+  cardFour.behavior();
+  cardFive.behavior();
+  cardSix.behavior();
+  cardSeven.behavior();
 }
 
 //checks if the user ever resizes the window and changes the scaling
@@ -258,18 +258,18 @@ function cardSetup() {
   cardSix   = new Card(  cardLocationSix[0],   cardLocationSix[1], 6);
   cardSeven = new Card(cardLocationSeven[0], cardLocationSeven[1], 7);
 
-  cardInfoOne.setupCardInfo();
-  cardInfoTwo.setupCardInfo();
-  cardInfoThree.setupCardInfo();
-  cardInfoFour.setupCardInfo();
-  cardInfoFive.setupCardInfo();
-  cardInfoSix.setupCardInfo();
-  cardInfoSeven.setupCardInfo();
+  cardOne.setupCardInfo();
+  cardTwo.setupCardInfo();
+  cardThree.setupCardInfo();
+  cardFour.setupCardInfo();
+  cardFive.setupCardInfo();
+  cardSix.setupCardInfo();
+  cardSeven.setupCardInfo();
 }
 
 function cardStatSetup() {
-  heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", 10];
   lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", 5];
+  heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", 10];
   flayAttack = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", ceil(random(4, 8))];
 }
 
@@ -441,23 +441,28 @@ function drawCard(drawNumber) {
       cardDeckList.shift();
     }
   }
+
+  //Displays the cardHand's contents
   let handListDisplay = [];
   for (let i = 0; i < cardHandList.length; i++) {
     handListDisplay.push(cardHandList[i][2]);
   }
   console.log("Hand List: " + handListDisplay);
+
+  //Displays the cardDeck's contents
   let deckListDisplay = [];
   for (let i = 0; i < cardDeckList.length; i++) {
     deckListDisplay.push(cardDeckList[i][2]);
   }
   console.log("Deck List: " + deckListDisplay);
 
+  
   for (let i = 0; i < cardHandList.length; i++) {
-    cardLocationList[i] = cardHandList[i];
+    cardList[i] = cardHandList[i];
   }
 
   for (let i = 0; i < cardHandList.length; i++) {
-    cardLocationList[i].cardInfo = cardHandList[i];
+    cardList[i].cardInfo = cardHandList[i];
     // console.log(cardLocationList[i].cardInfo);
     // console.log(cardHandList[i][0]);
   }
@@ -468,14 +473,14 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    console.log("cardInfo = " + cardLocationList[i].cardInfo[0]);
-    console.log("cardType = " + cardLocationList[i].cardType);
-    cardLocationList[i].cardType = cardLocationList[i].cardInfo[0];
-    cardLocationList[i].cardCost = cardLocationList[i].cardInfo[1];
-    cardLocationList[i].cardName = cardLocationList[i].cardInfo[2];
-    cardLocationList[i].cardText = cardLocationList[i].cardInfo[3];
-    cardLocationList[i].cardRarity = cardLocationList[i].cardInfo[4];
-    cardLocationList[i].cardEffectOne = cardLocationList[i].cardInfo[5];
+    console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
+    console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
+    cardList[i].cardType      = cardList[i].cardInfo[0];
+    cardList[i].cardCost      = cardList[i].cardInfo[1];
+    cardList[i].cardName      = cardList[i].cardInfo[2];
+    cardList[i].cardText      = cardList[i].cardInfo[3];
+    cardList[i].cardRarity    = cardList[i].cardInfo[4];
+    cardList[i].cardEffectOne = cardList[i].cardInfo[5];
   }
   // console.log(cardLocationList[0].cardInfo[0]);
 }
@@ -522,7 +527,6 @@ class Card {
     this.originalY = y;
     this.x = x;
     this.y = y;
-    this.cardType; //cardColourList[floor(random(5))];
     this.scalar = cardScalar;
     this.cardID = cardID;
     // this.newCardType = this.cardType;
