@@ -75,8 +75,8 @@ function setup() {
 }
 
 //setup all the variables
-let cardWidth = 100;
-let cardHeight = 160;
+let cardWidth = 150;
+let cardHeight = 240;
 let cardScalar = 1;
 let cardInHand = false;
 let draggingCardID;
@@ -99,10 +99,13 @@ let cardColourList = ["white", "blue", "green", "red", "yellow"];
 let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
+
 let whiteCard, blueCard, greenCard, redCard, yellowCard;
 let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
 let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
+let cardDisplayMap = new Map();
+
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
 
@@ -116,9 +119,7 @@ let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMo
 let monsterOne, monsterTwo, monsterThree;
 let monsterList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
 
-let monsterLocationOne = [1/3, 1/2];
-let monsterLocationTwo = [1/2, 1/4];
-let monsterLocationThree = [2/3, 1/2];
+let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
 let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
 let monstersSpawned = false;
 let monsterType;
@@ -180,7 +181,7 @@ function displayGame() {
     }
     if (endTurnButton.isClicked() && endTurnButtonReady) {
       endTurnButtonReady = false;
-      monstersSpawned = false;
+      //monstersSpawned = false;
       nextTurn();
     }
   }
@@ -242,13 +243,13 @@ function buttonSetup() {
 
 //sets up the cards used in the game as separate entities
 function cardSetup() {
-  cardLocationOne   = [width * (1/15), height * (5/6)];
-  cardLocationTwo   = [width * (2/15), height * (5/6)];
-  cardLocationThree = [width * (3/15), height * (5/6)];
-  cardLocationFour  = [width * (4/15), height * (5/6)];
-  cardLocationFive  = [width * (5/15), height * (5/6)];
-  cardLocationSix   = [width * (6/15), height * (5/6)];
-  cardLocationSeven = [width * (7/15), height * (5/6)];
+  cardLocationOne   = [width * (2/15), height * (3/4)];
+  cardLocationTwo   = [width * (3/15), height * (3/4)];
+  cardLocationThree = [width * (4/15), height * (3/4)];
+  cardLocationFour  = [width * (5/15), height * (3/4)];
+  cardLocationFive  = [width * (6/15), height * (3/4)];
+  cardLocationSix   = [width * (7/15), height * (3/4)];
+  cardLocationSeven = [width * (8/15), height * (3/4)];
 
   cardOne   = new Card(  cardLocationOne[0],   cardLocationOne[1], 1);
   cardTwo   = new Card(  cardLocationTwo[0],   cardLocationTwo[1], 2);
@@ -274,6 +275,10 @@ function cardStatSetup() {
 }
 
 function monsterSetup() {
+  monsterLocationOne   = [width * (1/3) - 50, height * (1/3)];
+  monsterLocationTwo   = [width * (1/2), height * (1/6)];
+  monsterLocationThree = [width * (2/3) + 50, height * (1/3)];
+
   chomperMonster    = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend", 200, 200);
   blueBeanMonster   = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
   spikySlimeMonster = new Monster("Spiky Slime", 2, 30, 60, "Slap", "SpikeUp", "Defend");
@@ -319,6 +324,9 @@ function keyPressed() {
   if (key === " ") {
     monstersSpawned = false;
     //nextTurn();
+  }
+  if (key === "s" || key === "S") {
+    monstersSpawned = false;
   }
 }
 
@@ -405,16 +413,16 @@ function spawnMonsters(spawnNumber) {
     //console.log(monsterOne, monsterTwo, monsterThree);
   }
 
-  monsterOne.xPosition = width *  monsterLocationOne[0]; 
-  monsterOne.yPosition = height * monsterLocationOne[1];
+  monsterOne.xPosition = monsterLocationOne[0]; 
+  monsterOne.yPosition = monsterLocationOne[1];
   image(monsterOne.monsterImage, monsterOne.xPosition, monsterOne.yPosition, monsterImageX, monsterImageY);
 
-  monsterTwo.xPosition = width *  monsterLocationTwo[0]; 
-  monsterTwo.yPosition = height * monsterLocationTwo[1];
+  monsterTwo.xPosition = monsterLocationTwo[0]; 
+  monsterTwo.yPosition = monsterLocationTwo[1];
   image(monsterTwo.monsterImage, monsterTwo.xPosition, monsterTwo.yPosition, monsterImageX, monsterImageY);
 
-  monsterThree.xPosition = width *  monsterLocationThree[0]; 
-  monsterThree.yPosition = height * monsterLocationThree[1];
+  monsterThree.xPosition = monsterLocationThree[0]; 
+  monsterThree.yPosition = monsterLocationThree[1];
   image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
 }
 
@@ -458,7 +466,7 @@ function drawCard(drawNumber) {
 
   
   for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i] = cardHandList[i];
+    cardList[i].cardInfo = cardHandList[i];
   }
 
   for (let i = 0; i < cardHandList.length; i++) {
@@ -473,14 +481,14 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
-    console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
     cardList[i].cardType      = cardList[i].cardInfo[0];
     cardList[i].cardCost      = cardList[i].cardInfo[1];
     cardList[i].cardName      = cardList[i].cardInfo[2];
     cardList[i].cardText      = cardList[i].cardInfo[3];
     cardList[i].cardRarity    = cardList[i].cardInfo[4];
     cardList[i].cardEffectOne = cardList[i].cardInfo[5];
+    console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
+    console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
   }
   // console.log(cardLocationList[0].cardInfo[0]);
 }
@@ -562,8 +570,8 @@ class Card {
       image(yellowCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else {
-      fill(100);
-      rect(this.x, this.y, this.width * this.scalar, this.height * this.scalar);
+      // fill(100);
+      // rect(this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
   }
 
@@ -598,7 +606,8 @@ class Card {
   }
 
   showCardInfo() {
-    text(this.cardCost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
+    // text(this.cardCost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
+    text("3", this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
     text(this.cardName);
     text(this.cardText);
   }
