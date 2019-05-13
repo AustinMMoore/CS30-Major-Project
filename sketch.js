@@ -607,8 +607,8 @@ class Card {
 
   showCardInfo() {
     fill(0);
-    // text(this.cardCost, this.x - 2/3 * this.width, this.y - 4/5 * this.height);
-    text(this.cardCost, this.x, this.y - 3/4 * this.width);
+    textSize(30 * this.scalar);
+    text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
     // text(this.cardName);
     // text(this.cardText);
   }
