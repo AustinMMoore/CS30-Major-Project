@@ -487,8 +487,8 @@ function assignHandValues() {
     cardList[i].cardText      = cardList[i].cardInfo[3];
     cardList[i].cardRarity    = cardList[i].cardInfo[4];
     cardList[i].cardEffectOne = cardList[i].cardInfo[5];
-    console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
-    console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
+    // console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
+    // console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
   }
   // console.log(cardLocationList[0].cardInfo[0]);
 }
@@ -606,10 +606,11 @@ class Card {
   }
 
   showCardInfo() {
-    // text(this.cardCost, this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
-    text("3", this.x - 2/3 * this.cardWidth, this.y - 4/5 * this.cardHeight);
-    text(this.cardName);
-    text(this.cardText);
+    fill(0);
+    // text(this.cardCost, this.x - 2/3 * this.width, this.y - 4/5 * this.height);
+    text(this.cardCost, this.x, this.y - 3/4 * this.width);
+    // text(this.cardName);
+    // text(this.cardText);
   }
 
   //function that calls all of the card's behaviors
