@@ -609,8 +609,11 @@ class Card {
     fill(0);
     textSize(30 * this.scalar);
     text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
-    // text(this.cardName);
-    // text(this.cardText);
+    textSize(18 * this.scalar);
+    text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
+    //, this.width/2 + 10, this.width/2 - 10
+    text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, 100, this.width/2 * this.scalar + 10, this.width/2 * this.scalar - 10);
+
   }
 
   //function that calls all of the card's behaviors
