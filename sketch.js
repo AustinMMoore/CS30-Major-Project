@@ -46,6 +46,8 @@ function preload() {
 
   standardCursor = loadImage("assets/cursors/standard.png");
   targetCursor = loadImage("assets/cursors/target.png");
+
+  manaStar = loadImage("assets/symbols/manaStar.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -113,6 +115,8 @@ let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
+let manaStar;
+
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
@@ -176,6 +180,7 @@ function displayGame() {
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
+    image(manaStar, 150, 150);
     if (backPlayButton.isClicked()) {
       gameState = "menu";
     }
@@ -544,7 +549,7 @@ class Card {
   //zooms in on the card when the mouse is hovering over it but not clicked
   zoomIn() {
     if (this.isSelected() && !mouseIsPressed) {
-      this.scalar = 2;
+      this.scalar = 1.5;
     }
     else {
       this.scalar = 1;
@@ -611,9 +616,10 @@ class Card {
     text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
     textSize(18 * this.scalar);
     text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
+    textAlign(LEFT);
     //, this.width/2 + 10, this.width/2 - 10
-    text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, 100, this.width/2 * this.scalar + 10, this.width/2 * this.scalar - 10);
-
+    text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, this.width/2 * this.scalar + 50 * this.scalar, this.height/2 * this.scalar - 35 * this.scalar);
+    textAlign(CENTER);
   }
 
   //function that calls all of the card's behaviors
