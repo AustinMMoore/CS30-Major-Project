@@ -74,6 +74,8 @@ function setup() {
   cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 
   cursorSpriteList = [standardCursor, targetCursor];
+
+  manaStarPosition = [width * 1/15, height * 1/15];
 }
 
 //setup all the variables
@@ -116,6 +118,7 @@ let cursorSpriteList;
 let cursorMode = "standard";
 
 let manaStar;
+let manaStarPosition;
 
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
@@ -180,7 +183,7 @@ function displayGame() {
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
-    image(manaStar, 150, 150);
+    image(manaStar, 150, 150, manaStarPosition[0], manaStarPosition[1]);
     if (backPlayButton.isClicked()) {
       gameState = "menu";
     }
@@ -248,13 +251,13 @@ function buttonSetup() {
 
 //sets up the cards used in the game as separate entities
 function cardSetup() {
-  cardLocationOne   = [width * (2/15), height * (3/4)];
-  cardLocationTwo   = [width * (3/15), height * (3/4)];
-  cardLocationThree = [width * (4/15), height * (3/4)];
-  cardLocationFour  = [width * (5/15), height * (3/4)];
-  cardLocationFive  = [width * (6/15), height * (3/4)];
-  cardLocationSix   = [width * (7/15), height * (3/4)];
-  cardLocationSeven = [width * (8/15), height * (3/4)];
+  cardLocationOne   = [width * (5/15), height * (3/4)];
+  cardLocationTwo   = [width * (6/15), height * (3/4)];
+  cardLocationThree = [width * (7/15), height * (3/4)];
+  cardLocationFour  = [width * (8/15), height * (3/4)];
+  cardLocationFive  = [width * (9/15), height * (3/4)];
+  cardLocationSix   = [width * (10/15), height * (3/4)];
+  cardLocationSeven = [width * (11/15), height * (3/4)];
 
   cardOne   = new Card(  cardLocationOne[0],   cardLocationOne[1], 1);
   cardTwo   = new Card(  cardLocationTwo[0],   cardLocationTwo[1], 2);
