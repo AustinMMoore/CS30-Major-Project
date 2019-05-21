@@ -146,6 +146,7 @@ let cardList;
 let lightAttack2, heavyAttack2, flayAttack2;
 
 let turnCounter = 0;
+let turnPhase = "upkeep";
 
 
 //main draw loop of the code
@@ -195,7 +196,7 @@ function displayGame() {
     if (endTurnButton.isClicked() && endTurnButtonReady) {
       endTurnButtonReady = false;
       //monstersSpawned = false;
-      nextTurn();
+      playerTurn();
     }
   }
 }
@@ -348,18 +349,13 @@ function cursorUpdate() {
   if (cardInHand === true) {
     cursorMode = "cardInHand";
   }
-  if (cardInHand && mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY/2 && mouseY <= monsterLocationOne[1] + monsterImageY/2) {
-    cursorMode = "target";
-  }
-  else if (cardInHand && monsterTwo.isSelected()) {
-    cursorMode = "target";
-  }
-  else if (cardInHand && mouseX >= monsterLocationThree[0] - monsterImageX/2 && mouseX <= monsterLocationThree[0] + monsterImageX/2 && mouseY >= monsterLocationThree[1] - monsterImageY/2 && mouseY <= monsterLocationThree[1] + monsterImageY/2) {
+  if (cardInHand && (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected())) {
     cursorMode = "target";
   }
   else {
     cursorMode = "standard";
   }
+
   if (cursorMode === "standard") {
     image(standardCursor, mouseX, mouseY, 30, 50);
   }
@@ -444,6 +440,30 @@ function spawnMonsters(spawnNumber) {
   image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
 }
 
+function monsterOneSelected() {
+  if (mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY/2 && mouseY <= monsterLocationOne[1] + monsterImageY/2) {
+    return true;
+  }
+}
+
+function monsterTwoSelected() {
+  if (mouseX >= monsterLocationTwo[0] - monsterImageX/2 && mouseX <= monsterLocationTwo[0] + monsterImageX/2 && mouseY >= monsterLocationTwo[1] - monsterImageY/2 && mouseY <= monsterLocationTwo[1] + monsterImageY/2) {
+    return true;
+  }
+}
+
+function monsterThreeSelected() {
+  if (mouseX >= monsterLocationThree[0] - monsterImageX/2 && mouseX <= monsterLocationThree[0] + monsterImageX/2 && mouseY >= monsterLocationThree[1] - monsterImageY/2 && mouseY <= monsterLocationThree[1] + monsterImageY/2) {
+    return true;
+  }
+}
+
+function monsterIsSelected() {
+  if (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected()) {
+    return true;
+  }
+}
+
 function shuffleDeck() {
   cardDeckList = shuffle(cardDeckList);
   // console.log(cardDeckList);
@@ -518,16 +538,26 @@ function assignHandValues() {
 - endStep
 */
 
-function nextTurn() {
-  turnCounter += 1;
-  upkeepStep();
-  mana = maxMana;
-  drawStep();
-  playStep();
-  endStep();
+function playerTurn() {
+  if (turnPhase === "upkeep") {
+    upkeepStep();
+  }
+  if (turnPhase === "draw") {
+    drawStep();
+  }
+  if (turnPhase === "play") {
+    playStep();
+  }
+  if (turnPhase === "end") {
+    endStep();
+  }
 }
 
-function upkeepStep() {}
+function upkeepStep() {
+  mana = maxMana;
+  turnCounter += 1;
+  turnPhase = "draw";
+}
 
 function drawStep() {
   if (turnCounter === 1) {
@@ -537,12 +567,20 @@ function drawStep() {
   else {
     drawCard(1);
   }
+  turnPhase = "play";
 }
 
-function playStep() {}
+function playStep() {
+  turnPhase = "end";
+}
 
-function endStep() {}
+function endStep() {
+  turnPhase = "enemyTurn";
+}
 
+function enemyTurn() {
+  turnPhase = "upkeep";
+}
 //defines the class used for the card's behavior
 class Card {
 
@@ -631,7 +669,6 @@ class Card {
     textSize(18 * this.scalar);
     text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
     textAlign(LEFT);
-    //, this.width/2 + 10, this.width/2 - 10
     text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, this.width/2 * this.scalar + 50 * this.scalar, this.height/2 * this.scalar - 35 * this.scalar);
     textAlign(CENTER);
   }
@@ -705,11 +742,5 @@ class Monster {
     this.yPosition = 0;
     this.imageX = imageX;
     this.imageY = imageY;
-  }
-
-  isSelected() {
-    if (mouseX >= this.x - this.imageX/2 && mouseX <= this.xPosition + this.imageX/2 && mouseY >= this.yPosition - this.imageY/2 && mouseY <= this.yPosition + this.imageY/2) {
-      return true;
-    }
   }
 }
