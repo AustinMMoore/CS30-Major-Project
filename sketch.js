@@ -75,7 +75,7 @@ function setup() {
 
   cursorSpriteList = [standardCursor, targetCursor];
 
-  manaStarPosition = [width * 1/15, height * 1/15];
+  manaStarPosition = [width * 1/15, height * 13/15];
 }
 
 //setup all the variables
@@ -119,6 +119,9 @@ let cursorMode = "standard";
 
 let manaStar;
 let manaStarPosition;
+let manaStarSize = 75;
+let mana = 0;
+let maxMana = 3;
 
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
@@ -130,7 +133,8 @@ let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
 let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
 let monstersSpawned = false;
 let monsterType;
-let monsterImageX, monsterImageY;
+let monsterImageX = 200;
+let monsterImageY = 215;
 
 let heavyAttack, lightAttack, flayAttack;
 let cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack, flayAttack];
@@ -183,7 +187,8 @@ function displayGame() {
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
-    image(manaStar, 150, 150, manaStarPosition[0], manaStarPosition[1]);
+    image(manaStar, manaStarPosition[0], manaStarPosition[1], manaStarSize, manaStarSize);
+    text(mana, manaStarPosition[0], manaStarPosition[1] + 12);
     if (backPlayButton.isClicked()) {
       gameState = "menu";
     }
@@ -287,7 +292,7 @@ function monsterSetup() {
   monsterLocationTwo   = [width * (1/2), height * (1/6)];
   monsterLocationThree = [width * (2/3) + 50, height * (1/3)];
 
-  chomperMonster    = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend", 200, 200);
+  chomperMonster    = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend");
   blueBeanMonster   = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
   spikySlimeMonster = new Monster("Spiky Slime", 2, 30, 60, "Slap", "SpikeUp", "Defend");
   dizzyMonster      = new Monster("Dizzy", 3, 20, 45, "Hypnosis", "Smack", "Defend");
@@ -341,10 +346,15 @@ function keyPressed() {
 function cursorUpdate() {
   imageMode(CORNER);
   if (cardInHand === true) {
-    console.log("cardInHand");
     cursorMode = "cardInHand";
   }
-  if (mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY && mouseY <= monsterLocationOne[1] + monsterImageY) {
+  if (cardInHand && mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY/2 && mouseY <= monsterLocationOne[1] + monsterImageY/2) {
+    cursorMode = "target";
+  }
+  else if (cardInHand && monsterTwo.isSelected()) {
+    cursorMode = "target";
+  }
+  else if (cardInHand && mouseX >= monsterLocationThree[0] - monsterImageX/2 && mouseX <= monsterLocationThree[0] + monsterImageX/2 && mouseY >= monsterLocationThree[1] - monsterImageY/2 && mouseY <= monsterLocationThree[1] + monsterImageY/2) {
     cursorMode = "target";
   }
   else {
@@ -355,7 +365,7 @@ function cursorUpdate() {
   }
   else if (cursorMode === "target") {
     imageMode(CENTER);
-    image(targetCursor, mouseX, mouseY, 40, 40);
+    image(targetCursor, mouseX, mouseY, 50, 50);
   }
   imageMode(CENTER);
 }
@@ -511,6 +521,7 @@ function assignHandValues() {
 function nextTurn() {
   turnCounter += 1;
   upkeepStep();
+  mana = maxMana;
   drawStep();
   playStep();
   endStep();
@@ -652,7 +663,6 @@ class Button {
 
   //displays the button with the correct colour, text, and size
   show() {
-
     if (this.isSelected()) {
       image(this.selectedButton, this.x, this.y, this.width, this.height);
     }
@@ -683,7 +693,7 @@ class Button {
 
 class Monster {
 
-  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, ImageX, ImageY) {
+  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, imageX, imageY) {
     this.monsterName = name;
     this.monsterImage = monsterSpriteList[imageNumber];
     this.monsterHealth = health;
@@ -693,7 +703,13 @@ class Monster {
     this.monsterAttackThree = attackThree;
     this.xPosition = 0;
     this.yPosition = 0;
-    this.ImageX = ImageX;
-    this.ImageY = ImageY;
+    this.imageX = imageX;
+    this.imageY = imageY;
+  }
+
+  isSelected() {
+    if (mouseX >= this.x - this.imageX/2 && mouseX <= this.xPosition + this.imageX/2 && mouseY >= this.yPosition - this.imageY/2 && mouseY <= this.yPosition + this.imageY/2) {
+      return true;
+    }
   }
 }
