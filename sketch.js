@@ -185,6 +185,7 @@ function displayGame() {
   if (gameState === "game") {
     image(forestBackgroundOne, width/2, height/2, width, height);
     spawnMonsters(3);
+    playerTurn();
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
@@ -192,11 +193,6 @@ function displayGame() {
     text(mana, manaStarPosition[0], manaStarPosition[1] + 12);
     if (backPlayButton.isClicked()) {
       gameState = "menu";
-    }
-    if (endTurnButton.isClicked() && endTurnButtonReady) {
-      endTurnButtonReady = false;
-      //monstersSpawned = false;
-      playerTurn();
     }
   }
 }
@@ -541,22 +537,25 @@ function assignHandValues() {
 function playerTurn() {
   if (turnPhase === "upkeep") {
     upkeepStep();
+    turnPhase = "draw";
   }
   if (turnPhase === "draw") {
     drawStep();
+    turnPhase = "play";
   }
   if (turnPhase === "play") {
     playStep();
+    turnPhase = "end";
   }
   if (turnPhase === "end") {
     endStep();
+    turnPhase = "enemyTurn";
   }
 }
 
 function upkeepStep() {
   mana = maxMana;
   turnCounter += 1;
-  turnPhase = "draw";
 }
 
 function drawStep() {
@@ -567,15 +566,18 @@ function drawStep() {
   else {
     drawCard(1);
   }
-  turnPhase = "play";
 }
 
 function playStep() {
-  turnPhase = "end";
+  if (endTurnButton.isClicked() && endTurnButtonReady) {
+    endTurnButtonReady = false;
+    //monstersSpawned = false;
+  }
+  
 }
 
 function endStep() {
-  turnPhase = "enemyTurn";
+  
 }
 
 function enemyTurn() {
