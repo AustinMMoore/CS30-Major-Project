@@ -312,14 +312,14 @@ function monsterSetup() {
 
 //checks when the mouse is released
 function mouseReleased() {
-  cardInHand = false;
-  draggingCardID = 0;
   muteButtonReady, endTurnButtonReady = true;
-
-  if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardInfo[1] >= mana) {
-    mana -= cardList[draggingCardID-1].cardInfo[1];
-    
+  console.log(cardInHand);
+  if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID].cardCost <= mana) {
+    mana -= cardList[draggingCardID].cardCost;
+    console.log("played", draggingCardID);
   }
+  draggingCardID = 0;
+  cardInHand = false;
 }
 
 //checks if the game is or is not sound muted
@@ -561,7 +561,7 @@ function playerTurn() {
     endStep();
     turnPhase = "enemyTurn";
   }
-  console.log(turnPhase);
+  //console.log(turnPhase);
 }
 
 function upkeepStep() {
