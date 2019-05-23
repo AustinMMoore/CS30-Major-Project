@@ -69,7 +69,7 @@ function setup() {
   cardSetup();
   monsterSetup();
 
-  cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack,flayAttack, flayAttack, flayAttack];
+  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay];
 
   cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 
@@ -136,8 +136,9 @@ let monsterType;
 let monsterImageX = 200;
 let monsterImageY = 215;
 
-let heavyAttack, lightAttack, flayAttack;
-let cardDeckList = [lightAttack, lightAttack, lightAttack, lightAttack, lightAttack, heavyAttack, heavyAttack, flayAttack];
+let heavyAttack, lightAttack, flay;
+let block, armorUp;
+let cardDeckList = [];
 let newDeckList = cardDeckList;
 let cardDiscardDeckList = [];
 let cardHandList = [];
@@ -185,7 +186,12 @@ function displayGame() {
   if (gameState === "game") {
     image(forestBackgroundOne, width/2, height/2, width, height);
     spawnMonsters(3);
-    playerTurn();
+    if (turnPhase !== "enemyTurn") {
+      playerTurn();
+    }
+    else if (turnPhase === "enemyTurn") {
+      enemyTurn();
+    }
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
@@ -281,7 +287,9 @@ function cardSetup() {
 function cardStatSetup() {
   lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", 5];
   heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", 10];
-  flayAttack = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", ceil(random(4, 8))];
+  flay = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", 15];
+  block = ["blue", 1, "Block", "Gain 5 armor.", "base", 0];
+  armorUp = ["blue", 2, "Armor Up", "Gain 10 armor", "common", 0];
 }
 
 function monsterSetup() {
@@ -307,8 +315,11 @@ function mouseReleased() {
   cardInHand = false;
   draggingCardID = 0;
   muteButtonReady, endTurnButtonReady = true;
-  //monstersSpawned = false;
-  //console.log(mouseX + ", " + mouseY);
+
+  if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardInfo[1] >= mana) {
+    mana -= cardList[draggingCardID-1].cardInfo[1];
+    
+  }
 }
 
 //checks if the game is or is not sound muted
@@ -342,7 +353,7 @@ function keyPressed() {
 
 function cursorUpdate() {
   imageMode(CORNER);
-  if (cardInHand === true) {
+  if (cardInHand) {
     cursorMode = "cardInHand";
   }
   if (cardInHand && (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected())) {
@@ -539,18 +550,18 @@ function playerTurn() {
     upkeepStep();
     turnPhase = "draw";
   }
-  if (turnPhase === "draw") {
+  else if (turnPhase === "draw") {
     drawStep();
     turnPhase = "play";
   }
-  if (turnPhase === "play") {
+  else if (turnPhase === "play") {
     playStep();
-    turnPhase = "end";
   }
-  if (turnPhase === "end") {
+  else if (turnPhase === "end") {
     endStep();
     turnPhase = "enemyTurn";
   }
+  console.log(turnPhase);
 }
 
 function upkeepStep() {
@@ -572,8 +583,8 @@ function playStep() {
   if (endTurnButton.isClicked() && endTurnButtonReady) {
     endTurnButtonReady = false;
     //monstersSpawned = false;
+    turnPhase = "end";
   }
-  
 }
 
 function endStep() {
