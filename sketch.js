@@ -48,6 +48,7 @@ function preload() {
   targetCursor = loadImage("assets/cursors/target.png");
 
   manaStar = loadImage("assets/symbols/manaStar.png");
+  healthHeart = loadImage("assets/symbols/healthHeart.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -89,10 +90,10 @@ let newCardType;
 let gameState = "menu";
 let buttonTextSize;
 
-let soundMute = false;
+let soundMute = true;
 let soundVolume = 0.5;
 let playingSound = false;
-let muteButtonReady, endTurnButtonReady = true;
+let ButtonReady = true;
 
 let colourChange = false;
 let backgroundColour = "grey";
@@ -117,7 +118,7 @@ let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
-let manaStar;
+let manaStar, healthHeart;
 let manaStarPosition;
 let manaStarSize = 75;
 let mana = 0;
@@ -164,7 +165,7 @@ function draw() {
 //shows the main menu screen where you can go to the Game, Options, or Quit (Check Console XD)
 function displayMenu() {
   if (gameState === "menu") {
-    image(menuBackground, width/2, width/4);
+    image(menuBackground, width/2, height/2, width, height);
     playButton.show();
     optionsButton.show();
     quitButton.show();
@@ -193,6 +194,7 @@ function displayGame() {
       enemyTurn();
     }
     cardBehavior();
+    monsterBehavior();
     backPlayButton.show();
     endTurnButton.show();
     image(manaStar, manaStarPosition[0], manaStarPosition[1], manaStarSize, manaStarSize);
@@ -218,9 +220,9 @@ function displayOptions() {
     if (lightOptionButton.isClicked()) {
       backgroundColour = "white";
     }
-    if (soundOptionButton.isClicked() && muteButtonReady) {
+    if (soundOptionButton.isClicked() && ButtonReady) {
       soundMute = !soundMute;
-      muteButtonReady = false;
+      ButtonReady = false;
     }
     if (backOptionButton.isClicked()) {
       gameState = "menu";
@@ -237,6 +239,12 @@ function cardBehavior() {
   cardFive.behavior();
   cardSix.behavior();
   cardSeven.behavior();
+}
+
+function monsterBehavior() {
+  monsterOne.behavior();
+  monsterTwo.behavior();
+  monsterThree.behavior();
 }
 
 //checks if the user ever resizes the window and changes the scaling
@@ -312,19 +320,19 @@ function monsterSetup() {
 
 //checks when the mouse is released
 function mouseReleased() {
-  muteButtonReady, endTurnButtonReady = true;
   console.log(cardInHand);
-  if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID].cardCost <= mana) {
-    mana -= cardList[draggingCardID].cardCost;
-    console.log("played", draggingCardID);
+  if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardCost <= mana) {
+    console.log("Played:", "Card:" + draggingCardID, "Cost:" + cardList[draggingCardID-1].cardCost);
+    cardList[draggingCardID-1].playCard();
   }
   draggingCardID = 0;
   cardInHand = false;
+  ButtonReady = true;
 }
 
 //checks if the game is or is not sound muted
 function checkMute() {
-  if (soundMute && muteButtonReady) {
+  if (soundMute && ButtonReady) {
     soundVolume = 0;
     backgroundMusic.pause();
   }
@@ -374,64 +382,71 @@ function cursorUpdate() {
 }
 
 function spawnMonsters(spawnNumber) {
-  if (!monstersSpawned && spawnNumber >= 1 && spawnNumber <= 3) {
+  if (!monstersSpawned && spawnNumber > 0 && spawnNumber < 4) {
     monstersSpawned = true;
 
-    //Monster One
-    monsterType = round(random(1, 5));
-    if (monsterType === 1) {
-      monsterOne = chomperMonster;
-    }
-    else if (monsterType === 2) {
-      monsterOne = blueBeanMonster;
-    }
-    else if (monsterType === 3) {
-      monsterOne = spikySlimeMonster;
-    }
-    else if (monsterType === 4) {
-      monsterOne = dizzyMonster;
-    }
-    else if (monsterType === 5) {
-      monsterOne = fireDemonMonster;
-    }
-
-    //Monster Two
-    monsterType = round(random(1, 3));
-    if (monsterType === 1) {
-      monsterTwo = chomperMonster;
-    }
-    else if (monsterType === 2) {
-      monsterTwo = blueBeanMonster;
-    }
-    else if (monsterType === 3) {
-      monsterTwo = spikySlimeMonster;
-    }
-    else if (monsterType === 4) {
-      monsterTwo = dizzyMonster;
-    }
-    else if (monsterType === 5) {
-      monsterTwo = fireDemonMonster;
+    if (spawnNumber > 0) {
+      //Monster One
+      monsterType = round(random(1, monsterList.length));
+      if (monsterType === 1) {
+        monsterOne = chomperMonster;
+      }
+      else if (monsterType === 2) {
+        monsterOne = blueBeanMonster;
+      }
+      else if (monsterType === 3) {
+        monsterOne = spikySlimeMonster;
+      }
+      else if (monsterType === 4) {
+        monsterOne = dizzyMonster;
+      }
+      else if (monsterType === 5) {
+        monsterOne = fireDemonMonster;
+      }
+      monsterOne.isSpawned = true;
     }
 
-    //Monster Three
-    monsterType = round(random(1, 3));
-    if (monsterType === 1) {
-      monsterThree = chomperMonster;
-    }
-    else if (monsterType === 2) {
-      monsterThree = blueBeanMonster;
-    }
-    else if (monsterType === 3) {
-      monsterThree = spikySlimeMonster;
-    }
-    else if (monsterType === 4) {
-      monsterThree = dizzyMonster;
-    }
-    else if (monsterType === 5) {
-      monsterThree = fireDemonMonster;
+    if (spawnNumber > 1) {
+      //Monster Two
+      monsterType = round(random(1, monsterList.length));
+      if (monsterType === 1) {
+        monsterTwo = chomperMonster;
+      }
+      else if (monsterType === 2) {
+        monsterTwo = blueBeanMonster;
+      }
+      else if (monsterType === 3) {
+        monsterTwo = spikySlimeMonster;
+      }
+      else if (monsterType === 4) {
+        monsterTwo = dizzyMonster;
+      }
+      else if (monsterType === 5) {
+        monsterTwo = fireDemonMonster;
+      }
+      monsterTwo.isSpawned = true;
     }
 
-    //console.log(monsterOne, monsterTwo, monsterThree);
+    if (spawnNumber > 2) {
+      //Monster Three
+      monsterType = round(random(1, monsterList.length));
+      if (monsterType === 1) {
+        monsterThree = chomperMonster;
+      }
+      else if (monsterType === 2) {
+        monsterThree = blueBeanMonster;
+      }
+      else if (monsterType === 3) {
+        monsterThree = spikySlimeMonster;
+      }
+      else if (monsterType === 4) {
+        monsterThree = dizzyMonster;
+      }
+      else if (monsterType === 5) {
+        monsterThree = fireDemonMonster;
+      }
+      monsterThree.isSpawned = true;
+    }
   }
 
   monsterOne.xPosition = monsterLocationOne[0]; 
@@ -580,8 +595,8 @@ function drawStep() {
 }
 
 function playStep() {
-  if (endTurnButton.isClicked() && endTurnButtonReady) {
-    endTurnButtonReady = false;
+  if (endTurnButton.isClicked() && ButtonReady) {
+    ButtonReady = false;
     //monstersSpawned = false;
     turnPhase = "end";
   }
@@ -658,6 +673,22 @@ class Card {
     if (!cardInHand) {
       this.x = this.originalX;
       this.y = this.originalY;
+    }
+  }
+
+  playCard() {
+    mana -= cardList[draggingCardID-1].cardCost;
+    if (monsterOneSelected) {
+      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
+      console.log(monsterOne.monsterHealth);
+    }
+    if (monsterTwoSelected) {
+      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
+      console.log(monsterTwo.monsterHealth);
+    }
+    if (monsterThreeSelected) {
+      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
+      console.log(monsterThree.monsterHealth);
     }
   }
 
@@ -755,5 +786,16 @@ class Monster {
     this.yPosition = 0;
     this.imageX = imageX;
     this.imageY = imageY;
+    this.isSpawned = false;
+  }
+
+  displayHealth() {
+    if (this.isSpawned) {
+      image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
+    }
+  }
+
+  behavior() {
+    this.displayHealth();
   }
 }
