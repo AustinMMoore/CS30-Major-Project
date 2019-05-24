@@ -49,6 +49,7 @@ function preload() {
 
   manaStar = loadImage("assets/symbols/manaStar.png");
   healthHeart = loadImage("assets/symbols/healthHeart.png");
+  armorShield = loadImage("assets/symbols/armorShield.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -64,7 +65,9 @@ function setup() {
   cardPickUp.playMode("restart");
   cardDraw.playMode("restart");
   deckShuffle.playMode("restart");
-  backgroundMusic.loop();
+  if (!soundMute) {
+    backgroundMusic.loop();
+  }
 
   cardStatSetup();
   cardSetup();
@@ -77,6 +80,7 @@ function setup() {
   cursorSpriteList = [standardCursor, targetCursor];
 
   manaStarPosition = [width * 1/15, height * 13/15];
+  armorShieldPosition = [width * 2/15, height * 13/15];
 }
 
 //setup all the variables
@@ -95,12 +99,6 @@ let soundVolume = 0.5;
 let playingSound = false;
 let ButtonReady = true;
 
-let colourChange = false;
-let backgroundColour = "grey";
-let buttonColour = "white";
-let textColour = "black";
-let cardColourList = ["white", "blue", "green", "red", "yellow"];
-
 let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
@@ -118,17 +116,22 @@ let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
-let manaStar, healthHeart;
-let manaStarPosition;
+let manaStar, healthHeart, armorShield;
+let manaStarPosition, armorShieldPosition;
 let manaStarSize = 75;
+let healthHeartSize = 75;
+let armorShieldSize = 75;
+
 let mana = 0;
 let maxMana = 3;
+let armor = 0;
 
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
 let monsterOne, monsterTwo, monsterThree;
-let monsterList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
+let monsterList = [monsterOne, monsterTwo, monsterThree];
+let monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
 
 let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
 let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
@@ -154,7 +157,6 @@ let turnPhase = "upkeep";
 //main draw loop of the code
 function draw() {
   checkMute();
-  background(backgroundColour);
   buttonSetup();
   displayMenu();
   displayGame();
@@ -193,13 +195,16 @@ function displayGame() {
     else if (turnPhase === "enemyTurn") {
       enemyTurn();
     }
-    cardBehavior();
     monsterBehavior();
+    cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
     image(manaStar, manaStarPosition[0], manaStarPosition[1], manaStarSize, manaStarSize);
     text(mana, manaStarPosition[0], manaStarPosition[1] + 12);
-    if (backPlayButton.isClicked()) {
+    fill(0);
+    image(armorShield, armorShieldPosition[0], armorShieldPosition[1], armorShieldSize - 10, armorShieldSize);
+    text(armor, armorShieldPosition[0], armorShieldPosition[1] + 5);
+    if (backPlayButton.isClicked() && ButtonReady) {
       gameState = "menu";
     }
   }
@@ -214,17 +219,11 @@ function displayOptions() {
     soundOptionButton.show();
     backOptionButton.show();
 
-    if (darkOptionButton.isClicked()) {
-      backgroundColour = "grey";
-    }
-    if (lightOptionButton.isClicked()) {
-      backgroundColour = "white";
-    }
     if (soundOptionButton.isClicked() && ButtonReady) {
       soundMute = !soundMute;
       ButtonReady = false;
     }
-    if (backOptionButton.isClicked()) {
+    if (backOptionButton.isClicked() && ButtonReady) {
       gameState = "menu";
     }
   }
@@ -293,11 +292,11 @@ function cardSetup() {
 }
 
 function cardStatSetup() {
-  lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", 5];
-  heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", 10];
-  flay = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", 15];
-  block = ["blue", 1, "Block", "Gain 5 armor.", "base", 0];
-  armorUp = ["blue", 2, "Armor Up", "Gain 10 armor", "common", 0];
+  lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", "damage", 5];
+  heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", "damage", 10];
+  flay        = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", "damage", 15];
+  block       = ["blue", 1, "Block", "Gain 5 armor.", "base", "armor", 5];
+  armorUp     = ["blue", 2, "Armor Up", "Gain 10 armor", "common", "armor", 10];
 }
 
 function monsterSetup() {
@@ -387,7 +386,7 @@ function spawnMonsters(spawnNumber) {
 
     if (spawnNumber > 0) {
       //Monster One
-      monsterType = round(random(1, monsterList.length));
+      monsterType = round(random(1, monsterTypeList.length));
       if (monsterType === 1) {
         monsterOne = chomperMonster;
       }
@@ -408,7 +407,7 @@ function spawnMonsters(spawnNumber) {
 
     if (spawnNumber > 1) {
       //Monster Two
-      monsterType = round(random(1, monsterList.length));
+      monsterType = round(random(1, monsterTypeList.length));
       if (monsterType === 1) {
         monsterTwo = chomperMonster;
       }
@@ -429,7 +428,7 @@ function spawnMonsters(spawnNumber) {
 
     if (spawnNumber > 2) {
       //Monster Three
-      monsterType = round(random(1, monsterList.length));
+      monsterType = round(random(1, monsterTypeList.length));
       if (monsterType === 1) {
         monsterThree = chomperMonster;
       }
@@ -541,16 +540,14 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardType      = cardList[i].cardInfo[0];
-    cardList[i].cardCost      = cardList[i].cardInfo[1];
-    cardList[i].cardName      = cardList[i].cardInfo[2];
-    cardList[i].cardText      = cardList[i].cardInfo[3];
-    cardList[i].cardRarity    = cardList[i].cardInfo[4];
-    cardList[i].cardEffectOne = cardList[i].cardInfo[5];
-    // console.log(cardList[i].cardID + " cardInfo = " + cardList[i].cardInfo[0]);
-    // console.log(cardList[i].cardID + " cardType = " + cardList[i].cardType);
+    cardList[i].cardType           = cardList[i].cardInfo[0];
+    cardList[i].cardCost           = cardList[i].cardInfo[1];
+    cardList[i].cardName           = cardList[i].cardInfo[2];
+    cardList[i].cardText           = cardList[i].cardInfo[3];
+    cardList[i].cardRarity         = cardList[i].cardInfo[4];
+    cardList[i].cardEffectOneType  = cardList[i].cardInfo[5];
+    cardList[i].cardEffectOneValue = cardList[i].cardInfo[6];
   }
-  // console.log(cardLocationList[0].cardInfo[0]);
 }
 
 /* 
@@ -571,6 +568,9 @@ function playerTurn() {
   }
   else if (turnPhase === "play") {
     playStep();
+    // rectMode(CORNER);
+    // fill("red");
+    // rect(monsterLocationOne[0] - monsterImageX/2 + 20, monsterLocationOne[1] + monsterImageY/2 + 20, monsterImageX/monsterOne.monsterMaxHealth * monsterOne.monsterHealth - 40, 20);
   }
   else if (turnPhase === "end") {
     endStep();
@@ -581,6 +581,7 @@ function playerTurn() {
 
 function upkeepStep() {
   mana = maxMana;
+  armor = 0;
   turnCounter += 1;
 }
 
@@ -674,21 +675,29 @@ class Card {
       this.x = this.originalX;
       this.y = this.originalY;
     }
+    if (cardInHand) {
+      ButtonReady = false;
+    }
   }
 
   playCard() {
     mana -= cardList[draggingCardID-1].cardCost;
-    if (monsterOneSelected) {
-      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
-      console.log(monsterOne.monsterHealth);
+    if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
+      if (monsterOneSelected) {
+        monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+        console.log(monsterOne.monsterHealth);
+      }
+      else if (monsterTwoSelected) {
+        monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+        console.log(monsterTwo.monsterHealth);
+      }
+      else if (monsterThreeSelected) {
+        monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+        console.log(monsterThree.monsterHealth);
+      }
     }
-    if (monsterTwoSelected) {
-      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
-      console.log(monsterTwo.monsterHealth);
-    }
-    if (monsterThreeSelected) {
-      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOne;
-      console.log(monsterThree.monsterHealth);
+    if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
+      armor += cardList[draggingCardID-1].cardEffectOneValue;
     }
   }
 
@@ -707,6 +716,7 @@ class Card {
   }
 
   showCardInfo() {
+    rectMode(CENTER);
     fill(0);
     textSize(30 * this.scalar);
     text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
@@ -774,24 +784,27 @@ class Button {
 
 class Monster {
 
-  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, imageX, imageY) {
+  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree) {
     this.monsterName = name;
     this.monsterImage = monsterSpriteList[imageNumber];
     this.monsterHealth = health;
+    this.monsterMaxHealth = health;
     this.monsterGold = gold;
     this.monsterAttackOne = attackOne;
     this.monsterAttackTwo = attackTwo;
     this.monsterAttackThree = attackThree;
     this.xPosition = 0;
     this.yPosition = 0;
-    this.imageX = imageX;
-    this.imageY = imageY;
     this.isSpawned = false;
   }
 
   displayHealth() {
     if (this.isSpawned) {
-      image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
+      fill("red");
+      rectMode(CORNER);
+      fill("red");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX/this.monsterMaxHealth * this.monsterHealth - 40, 20);
+      //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
     }
   }
 
