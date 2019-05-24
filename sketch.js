@@ -800,10 +800,11 @@ class Monster {
 
   displayHealth() {
     if (this.isSpawned) {
-      fill("red");
       rectMode(CORNER);
+      fill("black");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
       fill("red");
-      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX/this.monsterMaxHealth * this.monsterHealth - 40, 20);
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
       //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
     }
   }
