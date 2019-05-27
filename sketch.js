@@ -809,6 +809,10 @@ class Monster {
     }
   }
 
+  spawnMonster() {
+    
+  }
+
   behavior() {
     this.displayHealth();
   }
