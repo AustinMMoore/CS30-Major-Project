@@ -381,72 +381,6 @@ function cursorUpdate() {
 }
 
 function spawnMonsters(spawnNumber) {
-  if (!monstersSpawned && spawnNumber > 0 && spawnNumber < 4) {
-    monstersSpawned = true;
-
-    if (spawnNumber > 0) {
-      //Monster One
-      monsterType = round(random(1, monsterTypeList.length));
-      if (monsterType === 1) {
-        monsterOne = chomperMonster;
-      }
-      else if (monsterType === 2) {
-        monsterOne = blueBeanMonster;
-      }
-      else if (monsterType === 3) {
-        monsterOne = spikySlimeMonster;
-      }
-      else if (monsterType === 4) {
-        monsterOne = dizzyMonster;
-      }
-      else if (monsterType === 5) {
-        monsterOne = fireDemonMonster;
-      }
-      monsterOne.isSpawned = true;
-    }
-
-    if (spawnNumber > 1) {
-      //Monster Two
-      monsterType = round(random(1, monsterTypeList.length));
-      if (monsterType === 1) {
-        monsterTwo = chomperMonster;
-      }
-      else if (monsterType === 2) {
-        monsterTwo = blueBeanMonster;
-      }
-      else if (monsterType === 3) {
-        monsterTwo = spikySlimeMonster;
-      }
-      else if (monsterType === 4) {
-        monsterTwo = dizzyMonster;
-      }
-      else if (monsterType === 5) {
-        monsterTwo = fireDemonMonster;
-      }
-      monsterTwo.isSpawned = true;
-    }
-
-    if (spawnNumber > 2) {
-      //Monster Three
-      monsterType = round(random(1, monsterTypeList.length));
-      if (monsterType === 1) {
-        monsterThree = chomperMonster;
-      }
-      else if (monsterType === 2) {
-        monsterThree = blueBeanMonster;
-      }
-      else if (monsterType === 3) {
-        monsterThree = spikySlimeMonster;
-      }
-      else if (monsterType === 4) {
-        monsterThree = dizzyMonster;
-      }
-      else if (monsterType === 5) {
-        monsterThree = fireDemonMonster;
-      }
-      monsterThree.isSpawned = true;
-    }
-  }
 
   monsterOne.xPosition = monsterLocationOne[0]; 
   monsterOne.yPosition = monsterLocationOne[1];
@@ -810,7 +744,9 @@ class Monster {
   }
 
   spawnMonster() {
-    
+    if (!monstersSpawned) {
+      monstersSpawned = true;
+    }
   }
 
   behavior() {
