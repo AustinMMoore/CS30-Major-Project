@@ -381,6 +381,9 @@ function cursorUpdate() {
 }
 
 function spawnMonsters(spawnNumber) {
+  for (let i = 0; i < 3; i++) {
+    monsterList.spawnMonster(monsterTypeList[floor(random(1, monsterTypeList.length + 1))], monsterLocationList[i][0], monsterLocationList[i][1]);
+  }
 
   monsterOne.xPosition = monsterLocationOne[0]; 
   monsterOne.yPosition = monsterLocationOne[1];
@@ -718,7 +721,7 @@ class Button {
 
 class Monster {
 
-  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree) {
+  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, monsterID) {
     this.monsterName = name;
     this.monsterImage = monsterSpriteList[imageNumber];
     this.monsterHealth = health;
@@ -727,6 +730,7 @@ class Monster {
     this.monsterAttackOne = attackOne;
     this.monsterAttackTwo = attackTwo;
     this.monsterAttackThree = attackThree;
+    this.monsterID = monsterID;
     this.xPosition = 0;
     this.yPosition = 0;
     this.isSpawned = false;
@@ -743,9 +747,12 @@ class Monster {
     }
   }
 
-  spawnMonster() {
+  spawnMonster(monsterType, x, y) {
     if (!monstersSpawned) {
       monstersSpawned = true;
+      
+      this.xPosition = x;
+      this.yPosition = y;
     }
   }
 
