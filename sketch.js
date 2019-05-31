@@ -382,8 +382,10 @@ function cursorUpdate() {
 
 function spawnMonsters(spawnNumber) {
   for (let i = 0; i < 3; i++) {
-    monsterList.spawnMonster(monsterTypeList[floor(random(1, monsterTypeList.length + 1))], monsterLocationList[i][0], monsterLocationList[i][1]);
+    spawnMonster(monsterList[i], monsterTypeList[floor(random(1, monsterTypeList.length + 1))], monsterLocationList[i][0], monsterLocationList[i][1]);
   }
+
+  monstersSpawned = true;
 
   monsterOne.xPosition = monsterLocationOne[0]; 
   monsterOne.yPosition = monsterLocationOne[1];
@@ -396,6 +398,14 @@ function spawnMonsters(spawnNumber) {
   monsterThree.xPosition = monsterLocationThree[0]; 
   monsterThree.yPosition = monsterLocationThree[1];
   image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
+}
+
+function spawnMonster(monster, monsterType, x, y) {
+  if (!monstersSpawned) {
+    monster = monsterType;
+    monster.xPosition = x;
+    monster.yPosition = y;
+  }
 }
 
 function monsterOneSelected() {
@@ -730,7 +740,6 @@ class Monster {
     this.monsterAttackOne = attackOne;
     this.monsterAttackTwo = attackTwo;
     this.monsterAttackThree = attackThree;
-    this.monsterID = monsterID;
     this.xPosition = 0;
     this.yPosition = 0;
     this.isSpawned = false;
@@ -744,15 +753,6 @@ class Monster {
       fill("red");
       rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
       //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
-    }
-  }
-
-  spawnMonster(monsterType, x, y) {
-    if (!monstersSpawned) {
-      monstersSpawned = true;
-      
-      this.xPosition = x;
-      this.yPosition = y;
     }
   }
 
