@@ -75,8 +75,6 @@ function setup() {
 
   cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay];
 
-  cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
-
   cursorSpriteList = [standardCursor, targetCursor];
 
   manaStarPosition = [width * 1/15, height * 13/15];
@@ -89,7 +87,6 @@ let cardHeight = 240;
 let cardScalar = 1;
 let cardInHand = false;
 let draggingCardID;
-let newCardType;
 
 let gameState = "menu";
 let buttonTextSize;
@@ -107,6 +104,8 @@ let whiteCard, blueCard, greenCard, redCard, yellowCard;
 let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
 let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
+let cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
+let cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 let cardDisplayMap = new Map();
 
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
@@ -129,24 +128,25 @@ let armor = 0;
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
 let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
-let monsterOne, monsterTwo, monsterThree;
-let monsterList = [monsterOne, monsterTwo, monsterThree];
-let monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
-
 let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
+let monsterOne, monsterTwo, monsterThree;
+let moop = ["yes"];
+let meep = [moop];
+
 let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
+let monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
+let monsterList = [monsterOne, monsterTwo, monsterThree];
+
 let monstersSpawned = false;
 let monsterType;
-let monsterImageX = 200;
-let monsterImageY = 215;
+let monsterImageX;
+let monsterImageY;
 
 let heavyAttack, lightAttack, flay;
 let block, armorUp;
 let cardDeckList = [];
-let newDeckList = cardDeckList;
 let cardDiscardDeckList = [];
 let cardHandList = [];
-let cardList;
 
 let lightAttack2, heavyAttack2, flayAttack2;
 
@@ -162,6 +162,14 @@ function draw() {
   displayGame();
   displayOptions();
   cursorUpdate();
+
+  if (monsterOneSelected) {
+    //beep(1);
+  }
+}
+
+function beep(output) {
+  console.log(output);
 }
 
 //shows the main menu screen where you can go to the Game, Options, or Quit (Check Console XD)
@@ -178,7 +186,7 @@ function displayMenu() {
       gameState = "options";
     }
     if (quitButton.isClicked()) {
-      console.log("You'll never escape me!");
+      beep("You'll never escape me!");
       // window.close();
     }
   }
@@ -188,7 +196,7 @@ function displayMenu() {
 function displayGame() {
   if (gameState === "game") {
     image(forestBackgroundOne, width/2, height/2, width, height);
-    spawnMonsters(3);
+    spawnMonsters();
     if (turnPhase !== "enemyTurn") {
       playerTurn();
     }
@@ -266,67 +274,85 @@ function buttonSetup() {
 
 //sets up the cards used in the game as separate entities
 function cardSetup() {
-  cardLocationOne   = [width * (5/15), height * (3/4)];
-  cardLocationTwo   = [width * (6/15), height * (3/4)];
-  cardLocationThree = [width * (7/15), height * (3/4)];
-  cardLocationFour  = [width * (8/15), height * (3/4)];
-  cardLocationFive  = [width * (9/15), height * (3/4)];
-  cardLocationSix   = [width * (10/15), height * (3/4)];
-  cardLocationSeven = [width * (11/15), height * (3/4)];
+  cardLocationOne   = {x: width * (5/15), y:  height * (3/4)};
+  cardLocationTwo   = {x: width * (6/15), y:  height * (3/4)};
+  cardLocationThree = {x: width * (7/15), y:  height * (3/4)};
+  cardLocationFour  = {x: width * (8/15), y:  height * (3/4)};
+  cardLocationFive  = {x: width * (9/15), y:  height * (3/4)};
+  cardLocationSix   = {x: width * (10/15), y: height * (3/4)};
+  cardLocationSeven = {x: width * (11/15), y: height * (3/4)};
 
-  cardOne   = new Card(  cardLocationOne[0],   cardLocationOne[1], 1);
-  cardTwo   = new Card(  cardLocationTwo[0],   cardLocationTwo[1], 2);
-  cardThree = new Card(cardLocationThree[0], cardLocationThree[1], 3);
-  cardFour  = new Card( cardLocationFour[0],  cardLocationFour[1], 4);
-  cardFive  = new Card( cardLocationFive[0],  cardLocationFive[1], 5);
-  cardSix   = new Card(  cardLocationSix[0],   cardLocationSix[1], 6);
-  cardSeven = new Card(cardLocationSeven[0], cardLocationSeven[1], 7);
+  cardOne   = new Card(  cardLocationOne.x,   cardLocationOne.y, 1);
+  cardTwo   = new Card(  cardLocationTwo.x,   cardLocationTwo.y, 2);
+  cardThree = new Card(cardLocationThree.x, cardLocationThree.y, 3);
+  cardFour  = new Card( cardLocationFour.x,  cardLocationFour.y, 4);
+  cardFive  = new Card( cardLocationFive.x,  cardLocationFive.y, 5);
+  cardSix   = new Card(  cardLocationSix.x,   cardLocationSix.y, 6);
+  cardSeven = new Card(cardLocationSeven.x, cardLocationSeven.y, 7);
 
-  cardOne.setupCardInfo();
-  cardTwo.setupCardInfo();
-  cardThree.setupCardInfo();
-  cardFour.setupCardInfo();
-  cardFive.setupCardInfo();
-  cardSix.setupCardInfo();
-  cardSeven.setupCardInfo();
+  cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 }
 
 function cardStatSetup() {
-  lightAttack = ["white", 1, "Light Attack", "Deal 5 damage.", "base", "damage", 5];
-  heavyAttack = ["white", 2, "Heavy Attack", "Deal 10 damage.", "base", "damage", 10];
-  flay        = ["red", 3, "Flay", "Deal 8 damage to a random enemy.", "common", "damage", 15];
-  block       = ["blue", 1, "Block", "Gain 5 armor.", "base", "armor", 5];
-  armorUp     = ["blue", 2, "Armor Up", "Gain 10 armor", "common", "armor", 10];
+  lightAttack = {color: "white", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
+  heavyAttack = {color: "white", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
+  flay        = {color: "red", cost: 3, name: "Flay", text: "Deal 15 damage.", rarity: "common", effectOneType: "damage", effectOneValue: 15};
+  block       = {color: "blue", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
+  armorUp     = {color: "blue", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
 }
 
 function monsterSetup() {
-  monsterLocationOne   = [width * (1/3) - 50, height * (1/3)];
-  monsterLocationTwo   = [width * (1/2), height * (1/6)];
-  monsterLocationThree = [width * (2/3) + 50, height * (1/3)];
+  monsterLocationOne   = {x: width * (1/3) - 50, y: height * (1/3)};
+  monsterLocationTwo   = {x: width * (1/2), y: height * (1/6)};
+  monsterLocationThree = {x: width * (2/3) + 50, y: height * (1/3)};
 
-  chomperMonster    = new Monster("Chomper", 0, 25, 55, "Bite", "Consume", "Defend");
-  blueBeanMonster   = new Monster("Blue Bean", 1, 20, 50, "Slap", "Smack", "Defend");
-  spikySlimeMonster = new Monster("Spiky Slime", 2, 30, 60, "Slap", "SpikeUp", "Defend");
-  dizzyMonster      = new Monster("Dizzy", 3, 20, 45, "Hypnosis", "Smack", "Defend");
-  fireDemonMonster  = new Monster("Fire Demon", 4, 25, 55, "Burn", "Smack", "Defend");
+  monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
+
+  monsterOne   = new Monster();
+  monsterTwo   = new Monster();
+  monsterThree = new Monster();
+
+  monsterList = [monsterOne, monsterTwo, monsterThree];
+
+  monsterImageX = 200;
+  monsterImageY = 215;
+
+  for (let i = 0; i < 3; i++) {
+    monsterList[i].xPosition = monsterLocationList[i].x;
+    monsterList[i].yPosition = monsterLocationList[i].y;
+  }
+
+  //name, imageNumber, health, gold, attackOne, attackTwo, attackThree
+
+  chomperMonster    = {name: "Chomper",     image: chomperMonsterImage,    health: 25, gold: 55, attackOne: "Bite",     attackTwo: "Consume", attackThree: "Defend"};
+  blueBeanMonster   = {name: "Blue Bean",   image: blueBeanMonsterImage,   health: 20, gold: 50, attackOne: "Slap",     attackTwo: "Smack",   attackThree: "Defend"};
+  spikySlimeMonster = {name: "Spiky Slime", image: spikySlimeMonsterImage, health: 30, gold: 60, attackOne: "Slap",     attackTwo: "SpikeUp", attackThree: "Defend"};
+  dizzyMonster      = {name: "Dizzy",       image: dizzyMonsterImage,      health: 20, gold: 45, attackOne: "Hypnosis", attackTwo: "Smack",   attackThree: "Defend"};
+  fireDemonMonster  = {name: "Fire Demon",  image: fireDemonMonsterImage,  health: 25, gold: 55, attackOne: "Burn",     attackTwo: "Smack",   attackThree: "Defend"};
 
   chomperMonster.monsterImage    = chomperMonsterImage;
   blueBeanMonster.monsterImage   = blueBeanMonsterImage;
   spikySlimeMonster.monsterImage = spikySlimeMonsterImage;
   dizzyMonster.monsterImage      = dizzyMonsterImage;
   fireDemonMonster.monsterImage  = fireDemonMonsterImage;
+
+  monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
 }
 
 //checks when the mouse is released
 function mouseReleased() {
-  console.log(cardInHand);
   if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardCost <= mana) {
-    console.log("Played:", "Card:" + draggingCardID, "Cost:" + cardList[draggingCardID-1].cardCost);
+    beep("Played:", "Card:" + draggingCardID, "Cost:" + cardList[draggingCardID-1].cardCost);
     cardList[draggingCardID-1].playCard();
+    cardList[draggingCardID-1].discardCard();
   }
+  beep(draggingCardID);
   draggingCardID = 0;
   cardInHand = false;
   ButtonReady = true;
+  beep(monsterOneSelected());
+  beep(monsterTwoSelected());
+  beep(monsterThreeSelected());
 }
 
 //checks if the game is or is not sound muted
@@ -380,49 +406,51 @@ function cursorUpdate() {
   imageMode(CENTER);
 }
 
-function spawnMonsters(spawnNumber) {
-  for (let i = 0; i < 3; i++) {
-    spawnMonster(monsterList[i], monsterTypeList[floor(random(1, monsterTypeList.length + 1))], monsterLocationList[i][0], monsterLocationList[i][1]);
+function spawnMonsters() {
+  if (!monstersSpawned) {
+    for (let i = 0; i < 3; i++) {
+      let randomTypeNumber = floor(random(1, monsterTypeList.length));
+      monsterList[i].xPosition = monsterLocationList[i].x;
+      monsterList[i].yPosition = monsterLocationList[i].y;
+
+      monsterList[i].monsterName = monsterTypeList[randomTypeNumber].name;
+      monsterList[i].monsterImage = monsterTypeList[randomTypeNumber].image;
+      monsterList[i].monsterHealth = monsterTypeList[randomTypeNumber].health;
+      monsterList[i].monsterMaxHealth = monsterTypeList[randomTypeNumber].health;
+      monsterList[i].monsterGold = monsterTypeList[randomTypeNumber].gold;
+      monsterList[i].monsterAttackOne = monsterTypeList[randomTypeNumber].attackOne;
+      monsterList[i].monsterAttackTwo = monsterTypeList[randomTypeNumber].attackTwo;
+      monsterList[i].monsterAttackThree = monsterTypeList[randomTypeNumber].attackThree;
+    }
   }
 
   monstersSpawned = true;
-
-  monsterOne.xPosition = monsterLocationOne[0]; 
-  monsterOne.yPosition = monsterLocationOne[1];
-  image(monsterOne.monsterImage, monsterOne.xPosition, monsterOne.yPosition, monsterImageX, monsterImageY);
-
-  monsterTwo.xPosition = monsterLocationTwo[0]; 
-  monsterTwo.yPosition = monsterLocationTwo[1];
-  image(monsterTwo.monsterImage, monsterTwo.xPosition, monsterTwo.yPosition, monsterImageX, monsterImageY);
-
-  monsterThree.xPosition = monsterLocationThree[0]; 
-  monsterThree.yPosition = monsterLocationThree[1];
-  image(monsterThree.monsterImage, monsterThree.xPosition, monsterThree.yPosition, monsterImageX, monsterImageY);
-}
-
-function spawnMonster(monster, monsterType, x, y) {
-  if (!monstersSpawned) {
-    monster = monsterType;
-    monster.xPosition = x;
-    monster.yPosition = y;
-  }
 }
 
 function monsterOneSelected() {
-  if (mouseX >= monsterLocationOne[0] - monsterImageX/2 && mouseX <= monsterLocationOne[0] + monsterImageX/2 && mouseY >= monsterLocationOne[1] - monsterImageY/2 && mouseY <= monsterLocationOne[1] + monsterImageY/2) {
+  if (mouseX >= monsterLocationOne.x - monsterImageX/2 && mouseX <= monsterLocationOne.x + monsterImageX/2 && mouseY >= monsterLocationOne.y - monsterImageY/2 && mouseY <= monsterLocationOne.y + monsterImageY/2) {
     return true;
+  }
+  else {
+    return false;
   }
 }
 
 function monsterTwoSelected() {
-  if (mouseX >= monsterLocationTwo[0] - monsterImageX/2 && mouseX <= monsterLocationTwo[0] + monsterImageX/2 && mouseY >= monsterLocationTwo[1] - monsterImageY/2 && mouseY <= monsterLocationTwo[1] + monsterImageY/2) {
+  if (mouseX >= monsterLocationTwo.x - monsterImageX/2 && mouseX <= monsterLocationTwo.x + monsterImageX/2 && mouseY >= monsterLocationTwo.y - monsterImageY/2 && mouseY <= monsterLocationTwo.y + monsterImageY/2) {
     return true;
+  }
+  else {
+    return false;
   }
 }
 
 function monsterThreeSelected() {
-  if (mouseX >= monsterLocationThree[0] - monsterImageX/2 && mouseX <= monsterLocationThree[0] + monsterImageX/2 && mouseY >= monsterLocationThree[1] - monsterImageY/2 && mouseY <= monsterLocationThree[1] + monsterImageY/2) {
+  if (mouseX >= monsterLocationThree.x - monsterImageX/2 && mouseX <= monsterLocationThree.x + monsterImageX/2 && mouseY >= monsterLocationThree.y - monsterImageY/2 && mouseY <= monsterLocationThree.y + monsterImageY/2) {
     return true;
+  }
+  else {
+    return false;
   }
 }
 
@@ -434,13 +462,12 @@ function monsterIsSelected() {
 
 function shuffleDeck() {
   cardDeckList = shuffle(cardDeckList);
-  // console.log(cardDeckList);
 }
 
 function reshuffleDeck() {
   cardDeckList.push(cardDiscardDeckList);
   shuffle(cardDeckList, true);
-  //console.log(cardDeckList);
+  cardDiscardDeckList = [];
 }
 
 //function that adds card from the deck into the player's hand
@@ -448,7 +475,7 @@ function reshuffleDeck() {
 function drawCard(drawNumber) {
   for (let i = 0; i < drawNumber; i++) {
     if (cardHandList.length === 7) {
-      console.log("Your hand is full!");
+      beep("Your hand is full!");
     }
     else {
       cardHandList.push(cardDeckList[0]);
@@ -459,16 +486,22 @@ function drawCard(drawNumber) {
   //Displays the cardHand's contents
   let handListDisplay = [];
   for (let i = 0; i < cardHandList.length; i++) {
-    handListDisplay.push(cardHandList[i][2]);
+    handListDisplay.push(" " + cardHandList[i].name);
   }
-  console.log("Hand List: " + handListDisplay);
+  beep("Hand List:" + handListDisplay);
 
   //Displays the cardDeck's contents
   let deckListDisplay = [];
   for (let i = 0; i < cardDeckList.length; i++) {
-    deckListDisplay.push(cardDeckList[i][2]);
+    deckListDisplay.push(" " + cardDeckList[i].name);
   }
-  console.log("Deck List: " + deckListDisplay);
+  beep("Deck List: " + deckListDisplay);
+
+  let discardDeckListDisplay = [];
+  for (let i = 0; i < cardDiscardDeckList.length; i++) {
+    discardDeckListDisplay.push(" " + cardDiscardDeckList[i].name);
+  }
+  beep("Discard List: " + discardDeckListDisplay);
 
   
   for (let i = 0; i < cardHandList.length; i++) {
@@ -477,8 +510,6 @@ function drawCard(drawNumber) {
 
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardInfo = cardHandList[i];
-    // console.log(cardLocationList[i].cardInfo);
-    // console.log(cardHandList[i][0]);
   }
 
   assignHandValues();
@@ -487,13 +518,13 @@ function drawCard(drawNumber) {
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardType           = cardList[i].cardInfo[0];
-    cardList[i].cardCost           = cardList[i].cardInfo[1];
-    cardList[i].cardName           = cardList[i].cardInfo[2];
-    cardList[i].cardText           = cardList[i].cardInfo[3];
-    cardList[i].cardRarity         = cardList[i].cardInfo[4];
-    cardList[i].cardEffectOneType  = cardList[i].cardInfo[5];
-    cardList[i].cardEffectOneValue = cardList[i].cardInfo[6];
+    cardList[i].cardColor          = cardList[i].cardInfo.color;
+    cardList[i].cardCost           = cardList[i].cardInfo.cost;
+    cardList[i].cardName           = cardList[i].cardInfo.name;
+    cardList[i].cardText           = cardList[i].cardInfo.text;
+    cardList[i].cardRarity         = cardList[i].cardInfo.rarity;
+    cardList[i].cardEffectOneType  = cardList[i].cardInfo.effectOneType;
+    cardList[i].cardEffectOneValue = cardList[i].cardInfo.effectOneValue;
   }
 }
 
@@ -515,15 +546,11 @@ function playerTurn() {
   }
   else if (turnPhase === "play") {
     playStep();
-    // rectMode(CORNER);
-    // fill("red");
-    // rect(monsterLocationOne[0] - monsterImageX/2 + 20, monsterLocationOne[1] + monsterImageY/2 + 20, monsterImageX/monsterOne.monsterMaxHealth * monsterOne.monsterHealth - 40, 20);
   }
   else if (turnPhase === "end") {
     endStep();
     turnPhase = "enemyTurn";
   }
-  //console.log(turnPhase);
 }
 
 function upkeepStep() {
@@ -570,8 +597,6 @@ class Card {
     this.y = y;
     this.scalar = cardScalar;
     this.cardID = cardID;
-    // this.newCardType = this.cardType;
-    // this.isAssigned = false;
   }
 
   //zooms in on the card when the mouse is hovering over it but not clicked
@@ -586,20 +611,19 @@ class Card {
 
   //displays the card in the correct suit, position, and size
   showCard() {
-    //console.log(this.cardType);
-    if (this.cardType === "white"){
+    if (this.cardColor === "white"){
       image(whiteCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
-    else if (this.cardType === "blue") {
+    else if (this.cardColor === "blue") {
       image(blueCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
-    else if (this.cardType === "green") {
+    else if (this.cardColor === "green") {
       image(greenCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
-    else if (this.cardType === "red") {
+    else if (this.cardColor === "red") {
       image(redCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
-    else if (this.cardType === "yellow") {
+    else if (this.cardColor === "yellow") {
       image(yellowCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
     else {
@@ -630,22 +654,27 @@ class Card {
   playCard() {
     mana -= cardList[draggingCardID-1].cardCost;
     if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
-      if (monsterOneSelected) {
+      if (monsterOneSelected()) {
         monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        console.log(monsterOne.monsterHealth);
+        beep(monsterOne.monsterHealth);
       }
-      else if (monsterTwoSelected) {
+      else if (monsterTwoSelected()) {
         monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        console.log(monsterTwo.monsterHealth);
+        beep(monsterTwo.monsterHealth);
       }
-      else if (monsterThreeSelected) {
+      else if (monsterThreeSelected()) {
         monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        console.log(monsterThree.monsterHealth);
+        beep(monsterThree.monsterHealth);
       }
     }
     if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
       armor += cardList[draggingCardID-1].cardEffectOneValue;
     }
+  }
+  
+  discardCard() {
+    cardList.splice(draggingCardID-1, 1);
+    cardDiscardDeckList.push(cardList[draggingCardID-1]);
   }
 
   //funcion that returns if the object is moused over and not clicked
@@ -712,7 +741,6 @@ class Button {
       buttonClick.play();
       playingSound = false;
     }
-    //console.log(this.width, this.height, this.x, this.y);
     fill(this.textColour);
     textSize(this.buttonTextSize);
     text(this.buttonText, this.x, this.y + this.buttonTextSize/3);
@@ -731,32 +759,26 @@ class Button {
 
 class Monster {
 
-  constructor(name, imageNumber, health, gold, attackOne, attackTwo, attackThree, monsterID) {
-    this.monsterName = name;
-    this.monsterImage = monsterSpriteList[imageNumber];
-    this.monsterHealth = health;
-    this.monsterMaxHealth = health;
-    this.monsterGold = gold;
-    this.monsterAttackOne = attackOne;
-    this.monsterAttackTwo = attackTwo;
-    this.monsterAttackThree = attackThree;
+  constructor() {
     this.xPosition = 0;
     this.yPosition = 0;
-    this.isSpawned = false;
   }
 
   displayHealth() {
-    if (this.isSpawned) {
-      rectMode(CORNER);
-      fill("black");
-      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
-      fill("red");
-      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
-      //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
-    }
+    rectMode(CORNER);
+    fill("black");
+    rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
+    fill("red");
+    rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
+    //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
+  }
+
+  displayMonster() {
+    image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
   }
 
   behavior() {
     this.displayHealth();
+    this.displayMonster();
   }
 }
