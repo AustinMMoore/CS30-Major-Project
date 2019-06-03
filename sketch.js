@@ -542,7 +542,7 @@ function discardCard() {
   cardList[draggingCardID-1].cardInfo = {};
 
   for (let i = 0; i < cardHandList.length; i++) {
-    if (i > draggingCardID-1 && i < cardList.length) {
+    if (i > draggingCardID-1 && i+1 === !undefined) {
       cardList[i].cardInfo.color          = cardList[i+1].cardInfo.color;
       cardList[i].cardInfo.cost           = cardList[i+1].cardInfo.cost;
       cardList[i].cardInfo.name           = cardList[i+1].cardInfo.name;
@@ -783,7 +783,10 @@ class Monster {
     rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
     fill("red");
     rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
-    //image(healthHeart, this.xPosition, this.yPosition + 150, 75, 75);
+    fill("white");
+    textSize(50);
+    text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 165);
+
   }
 
   displayMonster() {
