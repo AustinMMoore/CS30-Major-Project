@@ -343,8 +343,8 @@ function monsterSetup() {
 function mouseReleased() {
   if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardCost <= mana) {
     beep("Played:", "Card:" + draggingCardID, "Cost:" + cardList[draggingCardID-1].cardCost);
-    cardList[draggingCardID-1].playCard();
-    cardList[draggingCardID-1].discardCard();
+    playCard();
+    discardCard();
   }
   beep(draggingCardID);
   draggingCardID = 0;
@@ -515,6 +515,45 @@ function drawCard(drawNumber) {
   assignHandValues();
 }
 
+function playCard() {
+  mana -= cardList[draggingCardID-1].cardCost;
+  if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
+    if (monsterOneSelected()) {
+      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      beep(monsterOne.monsterHealth);
+    }
+    else if (monsterTwoSelected()) {
+      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      beep(monsterTwo.monsterHealth);
+    }
+    else if (monsterThreeSelected()) {
+      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      beep(monsterThree.monsterHealth);
+    }
+  }
+  if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
+    armor += cardList[draggingCardID-1].cardEffectOneValue;
+  }
+}
+
+function discardCard() {
+  cardDiscardDeckList.push(cardList[draggingCardID-1]);
+
+  cardList[draggingCardID-1].cardInfo = {};
+
+  for (let i = 0; i < cardHandList.length; i++) {
+    if (i > draggingCardID-1 && i < cardList.length) {
+      cardList[i].cardInfo.color          = cardList[i+1].cardInfo.color;
+      cardList[i].cardInfo.cost           = cardList[i+1].cardInfo.cost;
+      cardList[i].cardInfo.name           = cardList[i+1].cardInfo.name;
+      cardList[i].cardInfo.text           = cardList[i+1].cardInfo.text;
+      cardList[i].cardInfo.rarity         = cardList[i+1].cardInfo.rarity;
+      cardList[i].cardInfo.effectOneType  = cardList[i+1].cardInfo.effectOneType;
+      cardList[i].cardInfo.effectOneValue = cardList[i+1].cardInfo.effectOneValue;
+    }
+  }
+  assignHandValues();
+}
 
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
@@ -649,32 +688,6 @@ class Card {
     if (cardInHand) {
       ButtonReady = false;
     }
-  }
-
-  playCard() {
-    mana -= cardList[draggingCardID-1].cardCost;
-    if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
-      if (monsterOneSelected()) {
-        monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        beep(monsterOne.monsterHealth);
-      }
-      else if (monsterTwoSelected()) {
-        monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        beep(monsterTwo.monsterHealth);
-      }
-      else if (monsterThreeSelected()) {
-        monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-        beep(monsterThree.monsterHealth);
-      }
-    }
-    if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
-      armor += cardList[draggingCardID-1].cardEffectOneValue;
-    }
-  }
-  
-  discardCard() {
-    cardList.splice(draggingCardID-1, 1);
-    cardDiscardDeckList.push(cardList[draggingCardID-1]);
   }
 
   //funcion that returns if the object is moused over and not clicked
