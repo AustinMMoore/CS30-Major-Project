@@ -342,7 +342,9 @@ function monsterSetup() {
 //checks when the mouse is released
 function mouseReleased() {
   if (turnPhase === "play" && monsterIsSelected() && cardInHand && cardList[draggingCardID-1].cardCost <= mana) {
-    beep("Played:", "Card:" + draggingCardID, "Cost:" + cardList[draggingCardID-1].cardCost);
+    beep("Played:");
+    beep("Card:" + draggingCardID);
+    beep("Cost:" + cardList[draggingCardID-1].cardCost);
     playCard();
     discardCard();
   }
@@ -350,9 +352,6 @@ function mouseReleased() {
   draggingCardID = 0;
   cardInHand = false;
   ButtonReady = true;
-  beep(monsterOneSelected());
-  beep(monsterTwoSelected());
-  beep(monsterThreeSelected());
 }
 
 //checks if the game is or is not sound muted
@@ -503,15 +502,6 @@ function drawCard(drawNumber) {
   }
   beep("Discard List: " + discardDeckListDisplay);
 
-  
-  for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardInfo = cardHandList[i];
-  }
-
-  for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardInfo = cardHandList[i];
-  }
-
   assignHandValues();
 }
 
@@ -520,15 +510,12 @@ function playCard() {
   if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
     if (monsterOneSelected()) {
       monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-      beep(monsterOne.monsterHealth);
     }
     else if (monsterTwoSelected()) {
       monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-      beep(monsterTwo.monsterHealth);
     }
     else if (monsterThreeSelected()) {
       monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
-      beep(monsterThree.monsterHealth);
     }
   }
   if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
@@ -537,25 +524,19 @@ function playCard() {
 }
 
 function discardCard() {
-  cardDiscardDeckList.push(cardList[draggingCardID-1]);
-
-  cardList[draggingCardID-1].cardInfo = {};
-
-  for (let i = 0; i < cardHandList.length; i++) {
-    if (i > draggingCardID-1 && i+1 === !undefined) {
-      cardList[i].cardInfo.color          = cardList[i+1].cardInfo.color;
-      cardList[i].cardInfo.cost           = cardList[i+1].cardInfo.cost;
-      cardList[i].cardInfo.name           = cardList[i+1].cardInfo.name;
-      cardList[i].cardInfo.text           = cardList[i+1].cardInfo.text;
-      cardList[i].cardInfo.rarity         = cardList[i+1].cardInfo.rarity;
-      cardList[i].cardInfo.effectOneType  = cardList[i+1].cardInfo.effectOneType;
-      cardList[i].cardInfo.effectOneValue = cardList[i+1].cardInfo.effectOneValue;
-    }
-  }
+  cardDiscardDeckList.push(cardHandList[draggingCardID-1]);
+  cardHandList.splice(draggingCardID-1, 1);
+  cardList[cardHandList.length-1].cardInfo = {};
   assignHandValues();
 }
 
 function assignHandValues() {
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardList[i].cardInfo = cardHandList[i];
+  }
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardList[i].cardInfo = cardHandList[i];
+  }
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardColor          = cardList[i].cardInfo.color;
     cardList[i].cardCost           = cardList[i].cardInfo.cost;
@@ -784,8 +765,8 @@ class Monster {
     fill("red");
     rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
     fill("white");
-    textSize(50);
-    text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 165);
+    textSize(40);
+    text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 162);
 
   }
 
