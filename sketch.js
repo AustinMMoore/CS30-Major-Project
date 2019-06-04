@@ -142,13 +142,11 @@ let monsterType;
 let monsterImageX;
 let monsterImageY;
 
-let heavyAttack, lightAttack, flay;
+let noCard, heavyAttack, lightAttack, flay;
 let block, armorUp;
 let cardDeckList = [];
 let cardDiscardDeckList = [];
 let cardHandList = [];
-
-let lightAttack2, heavyAttack2, flayAttack2;
 
 let turnCounter = 0;
 let turnPhase = "upkeep";
@@ -294,6 +292,7 @@ function cardSetup() {
 }
 
 function cardStatSetup() {
+  noCard      = {}; 
   lightAttack = {color: "white", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
   heavyAttack = {color: "white", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
   flay        = {color: "red", cost: 3, name: "Flay", text: "Deal 15 damage.", rarity: "common", effectOneType: "damage", effectOneValue: 15};
@@ -472,37 +471,42 @@ function reshuffleDeck() {
 //function that adds card from the deck into the player's hand
 //Currently logs all of the array info into the console as evidence that each card attains and maintains its card values
 function drawCard(drawNumber) {
-  for (let i = 0; i < drawNumber; i++) {
-    if (cardHandList.length === 7) {
-      beep("Your hand is full!");
+  if (cardDeckList.length > 0) {
+    for (let i = 0; i < drawNumber; i++) {
+      if (cardHandList.length === 7) {
+        beep("Your hand is full!");
+      }
+      else {
+        cardHandList.push(cardDeckList[0]);
+        cardDeckList.shift();
+      }
     }
-    else {
-      cardHandList.push(cardDeckList[0]);
-      cardDeckList.shift();
+
+    //Displays the cardHand's contents
+    let handListDisplay = [];
+    for (let i = 0; i < cardHandList.length; i++) {
+      handListDisplay.push(" " + cardHandList[i].name);
     }
-  }
+    beep("Hand List:" + handListDisplay);
 
-  //Displays the cardHand's contents
-  let handListDisplay = [];
-  for (let i = 0; i < cardHandList.length; i++) {
-    handListDisplay.push(" " + cardHandList[i].name);
-  }
-  beep("Hand List:" + handListDisplay);
+    //Displays the cardDeck's contents
+    let deckListDisplay = [];
+    for (let i = 0; i < cardDeckList.length; i++) {
+      deckListDisplay.push(" " + cardDeckList[i].name);
+    }
+    beep("Deck List: " + deckListDisplay);
 
-  //Displays the cardDeck's contents
-  let deckListDisplay = [];
-  for (let i = 0; i < cardDeckList.length; i++) {
-    deckListDisplay.push(" " + cardDeckList[i].name);
-  }
-  beep("Deck List: " + deckListDisplay);
+    let discardDeckListDisplay = [];
+    for (let i = 0; i < cardDiscardDeckList.length; i++) {
+      discardDeckListDisplay.push(" " + cardDiscardDeckList[i].name);
+    }
+    beep("Discard List: " + discardDeckListDisplay);
 
-  let discardDeckListDisplay = [];
-  for (let i = 0; i < cardDiscardDeckList.length; i++) {
-    discardDeckListDisplay.push(" " + cardDiscardDeckList[i].name);
+    assignHandValues();
   }
-  beep("Discard List: " + discardDeckListDisplay);
-
-  assignHandValues();
+  else {
+    beep("Your deck is empty");
+  }
 }
 
 function playCard() {
@@ -526,7 +530,7 @@ function playCard() {
 function discardCard() {
   cardDiscardDeckList.push(cardHandList[draggingCardID-1]);
   cardHandList.splice(draggingCardID-1, 1);
-  cardList[cardHandList.length-1].cardInfo = {};
+  cardList[cardHandList.length-1].cardInfo = {}; 
   assignHandValues();
 }
 
@@ -759,19 +763,22 @@ class Monster {
   }
 
   displayHealth() {
-    rectMode(CORNER);
-    fill("black");
-    rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
-    fill("red");
-    rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
-    fill("white");
-    textSize(40);
-    text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 162);
-
+    if (this.monsterHealth > 0) {
+      rectMode(CORNER);
+      fill("black");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, monsterImageX - 40, 40);
+      fill("red");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 20, (monsterImageX - 40)/this.monsterMaxHealth * this.monsterHealth, 40);
+      fill("white");
+      textSize(40);
+      text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 162);
+    }
   }
 
   displayMonster() {
-    image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
+    if (this.monsterHealth > 0) { 
+      image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
+    }
   }
 
   behavior() {
