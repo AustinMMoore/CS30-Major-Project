@@ -302,7 +302,7 @@ function cardStatSetup() {
 
 function monsterSetup() {
   monsterLocationOne   = {x: width * (1/3) - 50, y: height * (1/3)};
-  monsterLocationTwo   = {x: width * (1/2), y: height * (1/6)};
+  monsterLocationTwo   = {x: width * (1/2), y: height * (9/32)};
   monsterLocationThree = {x: width * (2/3) + 50, y: height * (1/3)};
 
   monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
@@ -529,9 +529,17 @@ function playCard() {
 
 function discardCard() {
   cardDiscardDeckList.push(cardHandList[draggingCardID-1]);
-  cardHandList.splice(draggingCardID-1, 1);
   cardList[cardHandList.length-1].cardInfo = {}; 
+  cardHandList.splice(draggingCardID-1, 1);
   assignHandValues();
+
+  cardList[cardHandList.length].cardColor          = "";
+  cardList[cardHandList.length].cardCost           = "";
+  cardList[cardHandList.length].cardName           = "";
+  cardList[cardHandList.length].cardText           = "";
+  cardList[cardHandList.length].cardRarity         = "";
+  cardList[cardHandList.length].cardEffectOneType  = "";
+  cardList[cardHandList.length].cardEffectOneValue = "";
 }
 
 function assignHandValues() {
@@ -779,6 +787,10 @@ class Monster {
     if (this.monsterHealth > 0) { 
       image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
     }
+  }
+
+  displayIntent() {
+    
   }
 
   behavior() {
