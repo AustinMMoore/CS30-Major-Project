@@ -31,6 +31,7 @@ function preload() {
   greenCard = loadImage("assets/cards/greencard.png");
   redCard = loadImage("assets/cards/redcard.png");
   yellowCard = loadImage("assets/cards/yellowcard.png");
+  cardBack = loadImage("assets/cards/cardBack.png");
 
   menuBackground = loadImage("assets/backgrounds/menuBackground.jpg");
   dungeonBackgroundTwo = loadImage("assets/backgrounds/dungeonOne.jpg");
@@ -100,13 +101,14 @@ let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
 
-let whiteCard, blueCard, greenCard, redCard, yellowCard;
+let whiteCard, blueCard, greenCard, redCard, yellowCard, cardBack;
 let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
 let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
 let cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
 let cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
 let cardDisplayMap = new Map();
+let deckLocation;
 
 let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
@@ -244,6 +246,12 @@ function cardBehavior() {
   cardFive.behavior();
   cardSix.behavior();
   cardSeven.behavior();
+
+  displayDeck();
+}
+
+function displayDeck() {
+  image(cardBack, deckLocation.x, deckLocation.y, cardWidth, cardHeight);
 }
 
 function monsterBehavior() {
@@ -289,13 +297,13 @@ function cardSetup() {
   cardSeven = new Card(cardLocationSeven.x, cardLocationSeven.y, 7);
 
   cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
+  deckLocation = {x: width * (13/15), y: height * (3/4)};
 }
 
 function cardStatSetup() {
-  noCard      = {}; 
-  lightAttack = {color: "white", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
-  heavyAttack = {color: "white", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
-  flay        = {color: "red", cost: 3, name: "Flay", text: "Deal 15 damage.", rarity: "common", effectOneType: "damage", effectOneValue: 15};
+  lightAttack = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
+  heavyAttack = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
+  flay        = {color: "red", cost: 1, name: "Flay", text: "Deal 8 damage to a random enemy.", rarity: "common", effectOneType: "randomTargetDamage", effectOneValue: 8};
   block       = {color: "blue", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
   armorUp     = {color: "blue", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
 }
@@ -506,6 +514,11 @@ function drawCard(drawNumber) {
   }
   else {
     beep("Your deck is empty");
+    for (let i = 0; i < cardDiscardDeckList.length; i++) {
+      cardDeckList.push(cardDiscardDeckList[i]);
+    }
+    cardDiscardDeckList = [];
+    drawCard(4);
   }
 }
 
@@ -522,8 +535,11 @@ function playCard() {
       monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
     }
   }
-  if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
+  else if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
     armor += cardList[draggingCardID-1].cardEffectOneValue;
+  }
+  else if (cardList[draggingCardID-1].cardEffectOneType === "randomTargetDamage") {
+    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
   }
 }
 
@@ -597,7 +613,7 @@ function drawStep() {
     drawCard(4);
   }
   else {
-    drawCard(1);
+    drawCard(4);
   }
 }
 
@@ -610,7 +626,10 @@ function playStep() {
 }
 
 function endStep() {
-  
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardDiscardDeckList.push(cardHandList[i]);
+  }
+  cardHandList = [];
 }
 
 function enemyTurn() {
