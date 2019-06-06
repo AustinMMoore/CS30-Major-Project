@@ -74,7 +74,7 @@ function setup() {
   cardSetup();
   monsterSetup();
 
-  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay];
+  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay, shieldToss, shieldToss, phalanxStance];
 
   cursorSpriteList = [standardCursor, targetCursor];
 
@@ -144,8 +144,10 @@ let monsterType;
 let monsterImageX;
 let monsterImageY;
 
-let noCard, heavyAttack, lightAttack, flay;
-let block, armorUp;
+let heavyAttack, lightAttack, flay;
+let block, armorUp, shieldToss;
+let phalanxStance;
+let currentStance;
 let cardDeckList = [];
 let cardDiscardDeckList = [];
 let cardHandList = [];
@@ -301,11 +303,14 @@ function cardSetup() {
 }
 
 function cardStatSetup() {
-  lightAttack = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
-  heavyAttack = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
-  flay        = {color: "red", cost: 1, name: "Flay", text: "Deal 8 damage to a random enemy.", rarity: "common", effectOneType: "randomTargetDamage", effectOneValue: 8};
-  block       = {color: "blue", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
-  armorUp     = {color: "blue", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
+  // {color: "", cost: , name: "", text: "", rarity: "", effectOneType: "", effectOneValue: };
+  lightAttack   = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
+  heavyAttack   = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
+  flay          = {color: "red", cost: 1, name: "Flay", text: "Deal 8 damage to a random enemy.", rarity: "common", effectOneType: "randomTargetDamage", effectOneValue: 8};
+  block         = {color: "white", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
+  armorUp       = {color: "white", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
+  shieldToss    = {color: "white", cost: 2, name: "Shield Toss", text: "Deal 5 damage, gain 5 armor", rarity: "common", effectOneType: "damage", effectOneValue: 10, effectTwoType: "armor", effectTwoValue: 5};
+  phalanxStance = {color: "yellow", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectOneType: "stanceArmor", effectOneValue: 5};
 }
 
 function monsterSetup() {
@@ -541,6 +546,30 @@ function playCard() {
   else if (cardList[draggingCardID-1].cardEffectOneType === "randomTargetDamage") {
     monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
   }
+  else if (cardList[draggingCardID-1].cardEffectOneType === "stance") {
+    currentStance = cardList[draggingCardID-1].name;
+  }
+
+  if (cardList[draggingCardID-1].cardEffectTwoType === "damage") {
+    if (monsterOneSelected()) {
+      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+    }
+    else if (monsterTwoSelected()) {
+      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+    }
+    else if (monsterThreeSelected()) {
+      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+    }
+  }
+  else if (cardList[draggingCardID-1].cardEffectTwoType === "armor") {
+    armor += cardList[draggingCardID-1].cardEffectTwoValue;
+  }
+  else if (cardList[draggingCardID-1].cardEffectTwoType === "randomTargetDamage") {
+    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+  }
+  else if (cardList[draggingCardID-1].cardEffectTwoType === "stance") {
+    currentStance = cardList[draggingCardID-1].name;
+  }
 }
 
 function discardCard() {
@@ -576,6 +605,12 @@ function assignHandValues() {
   }
 }
 
+function stanceAction(stance) {
+  if (stance === "Phalanx Stance") {
+    armor += 5;
+  }
+}
+
 /* 
 - upkeepStep
 - drawStep
@@ -605,6 +640,7 @@ function upkeepStep() {
   mana = maxMana;
   armor = 0;
   turnCounter += 1;
+  stanceAction(currentStance);
 }
 
 function drawStep() {
@@ -721,9 +757,11 @@ class Card {
     fill(0);
     textSize(30 * this.scalar);
     text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
-    textSize(18 * this.scalar);
-    text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
-    textAlign(LEFT);
+    if (this.cardName.length > 11) {
+      textSize(18 * this.scalar);
+      text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
+    }
+      textAlign(LEFT);
     text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, this.width/2 * this.scalar + 50 * this.scalar, this.height/2 * this.scalar - 35 * this.scalar);
     textAlign(CENTER);
   }
