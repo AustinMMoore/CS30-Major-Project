@@ -31,6 +31,7 @@ function preload() {
   greenCard = loadImage("assets/cards/greencard.png");
   redCard = loadImage("assets/cards/redcard.png");
   yellowCard = loadImage("assets/cards/yellowcard.png");
+  purpleCard = loadImage("assets/cards/purpleCard.png");
   cardBack = loadImage("assets/cards/cardBack.png");
 
   menuBackground = loadImage("assets/backgrounds/menuBackground.jpg");
@@ -74,7 +75,7 @@ function setup() {
   cardSetup();
   monsterSetup();
 
-  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay, shieldToss, shieldToss, phalanxStance];
+  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay, shieldToss, shieldToss, phalanxStance, spiritStance];
 
   cursorSpriteList = [standardCursor, targetCursor];
 
@@ -101,7 +102,7 @@ let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
 
 let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
 
-let whiteCard, blueCard, greenCard, redCard, yellowCard, cardBack;
+let whiteCard, blueCard, greenCard, redCard, yellowCard, purpleCard, cardBack;
 let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
 let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
 let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
@@ -146,7 +147,7 @@ let monsterImageY;
 
 let heavyAttack, lightAttack, flay;
 let block, armorUp, shieldToss;
-let phalanxStance;
+let phalanxStance, spiritStance;
 let currentStance;
 let cardDeckList = [];
 let cardDiscardDeckList = [];
@@ -310,7 +311,9 @@ function cardStatSetup() {
   block         = {color: "white", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
   armorUp       = {color: "white", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
   shieldToss    = {color: "white", cost: 2, name: "Shield Toss", text: "Deal 5 damage, gain 5 armor", rarity: "common", effectOneType: "damage", effectOneValue: 10, effectTwoType: "armor", effectTwoValue: 5};
-  phalanxStance = {color: "yellow", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectOneType: "stanceArmor", effectOneValue: 5};
+  phalanxStance = {color: "white", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectOneType: "stance", effectOneValue: 0};
+  spiritStance  = {color: "purple", cost: 3, name: "Spirit Stance", text: "Every Turn, you gain 1 mana.", rarity: "rare", effectOneType: "stance", effectOneValue: 0};
+
 }
 
 function monsterSetup() {
@@ -484,47 +487,44 @@ function reshuffleDeck() {
 //function that adds card from the deck into the player's hand
 //Currently logs all of the array info into the console as evidence that each card attains and maintains its card values
 function drawCard(drawNumber) {
-  if (cardDeckList.length > 0) {
-    for (let i = 0; i < drawNumber; i++) {
-      if (cardHandList.length === 7) {
-        beep("Your hand is full!");
+  for (let i = 0; i < drawNumber; i++) {
+    if (cardHandList.length === 7) {
+      beep("Your hand is full!");
+    }
+    else if (cardDeckList.length < 1) {
+      for (let i = 0; i < cardDiscardDeckList.length; i++) {
+        cardDeckList.push(cardDiscardDeckList[i]);
       }
-      else {
-        cardHandList.push(cardDeckList[0]);
-        cardDeckList.shift();
-      }
+      cardDiscardDeckList = [];
+      cardHandList.push(cardDeckList[0]);
+      cardDeckList.shift();
     }
-
-    //Displays the cardHand's contents
-    let handListDisplay = [];
-    for (let i = 0; i < cardHandList.length; i++) {
-      handListDisplay.push(" " + cardHandList[i].name);
+    else {
+      cardHandList.push(cardDeckList[0]);
+      cardDeckList.shift();
     }
-    beep("Hand List:" + handListDisplay);
-
-    //Displays the cardDeck's contents
-    let deckListDisplay = [];
-    for (let i = 0; i < cardDeckList.length; i++) {
-      deckListDisplay.push(" " + cardDeckList[i].name);
-    }
-    beep("Deck List: " + deckListDisplay);
-
-    let discardDeckListDisplay = [];
-    for (let i = 0; i < cardDiscardDeckList.length; i++) {
-      discardDeckListDisplay.push(" " + cardDiscardDeckList[i].name);
-    }
-    beep("Discard List: " + discardDeckListDisplay);
-
-    assignHandValues();
   }
-  else {
-    beep("Your deck is empty");
-    for (let i = 0; i < cardDiscardDeckList.length; i++) {
-      cardDeckList.push(cardDiscardDeckList[i]);
-    }
-    cardDiscardDeckList = [];
-    drawCard(4);
+  //Displays the cardHand's contents
+  let handListDisplay = [];
+  for (let i = 0; i < cardHandList.length; i++) {
+    handListDisplay.push(" " + cardHandList[i].name);
   }
+  beep("Hand List:" + handListDisplay);
+
+  //Displays the cardDeck's contents
+  let deckListDisplay = [];
+  for (let i = 0; i < cardDeckList.length; i++) {
+    deckListDisplay.push(" " + cardDeckList[i].name);
+  }
+  beep("Deck List: " + deckListDisplay);
+
+  let discardDeckListDisplay = [];
+  for (let i = 0; i < cardDiscardDeckList.length; i++) {
+    discardDeckListDisplay.push(" " + cardDiscardDeckList[i].name);
+  }
+  beep("Discard List: " + discardDeckListDisplay);
+
+  assignHandValues();
 }
 
 function playCard() {
@@ -547,7 +547,9 @@ function playCard() {
     monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
   }
   else if (cardList[draggingCardID-1].cardEffectOneType === "stance") {
-    currentStance = cardList[draggingCardID-1].name;
+    currentStance = cardList[draggingCardID-1].cardName;
+    beep(currentStance);
+    beep(cardList[draggingCardID-1].name);
   }
 
   if (cardList[draggingCardID-1].cardEffectTwoType === "damage") {
@@ -608,6 +610,9 @@ function assignHandValues() {
 function stanceAction(stance) {
   if (stance === "Phalanx Stance") {
     armor += 5;
+  }
+  else if (stance === "Spirit Stance") {
+    mana += 1;
   }
 }
 
@@ -713,6 +718,9 @@ class Card {
     else if (this.cardColor === "yellow") {
       image(yellowCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
     }
+    else if (this.cardColor === "purple") {
+      image(purpleCard, this.x, this.y, this.width * this.scalar, this.height * this.scalar);
+    }
     else {
       // fill(100);
       // rect(this.x, this.y, this.width * this.scalar, this.height * this.scalar);
@@ -757,11 +765,9 @@ class Card {
     fill(0);
     textSize(30 * this.scalar);
     text(this.cardCost, this.x - 3/10 * this.width * this.scalar, this.y - 53/150 * this.height * this.scalar);
-    if (this.cardName.length > 11) {
-      textSize(18 * this.scalar);
-      text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar);
-    }
-      textAlign(LEFT);
+    textSize(18 * this.scalar);
+    text(this.cardName, this.x, this.y - 1/5 * this.height * this.scalar, 100 * this.scalar, 40 * this.scalar);
+    textAlign(LEFT);
     text(this.cardText, this.x, this.y + 1/5 * this.height * this.scalar, this.width/2 * this.scalar + 50 * this.scalar, this.height/2 * this.scalar - 35 * this.scalar);
     textAlign(CENTER);
   }
