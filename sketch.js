@@ -305,17 +305,17 @@ function cardSetup() {
 }
 
 function cardStatSetup() {
-  // {color: "", cost: , name: "", text: "", rarity: "", effectOneType: "", effectOneValue: };
-  lightAttack     = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 5};
-  heavyAttack     = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectOneType: "damage", effectOneValue: 10};
-  flay            = {color: "red", cost: 1, name: "Flay", text: "Deal 10 damage to a random enemy.", rarity: "common", effectOneType: "randomTargetDamage", effectOneValue: 10};
-  berserkerStance = {color: "red", cost: 3, name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.", rarity: "rare", effectOneType: "stance", effectOneValue: 0};
-  block           = {color: "white", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectOneType: "armor", effectOneValue: 5};
-  armorUp         = {color: "white", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectOneType: "armor", effectOneValue: 10};
-  shieldToss      = {color: "white", cost: 2, name: "Shield Toss", text: "Deal 5 damage, gain 5 armor", rarity: "common", effectOneType: "damage", effectOneValue: 10, effectTwoType: "armor", effectTwoValue: 5};
-  phalanxStance   = {color: "white", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectOneType: "stance", effectOneValue: 0};
-  spiritStance    = {color: "purple", cost: 3, name: "Spirit Stance", text: "Every Turn, you gain 1 mana.", rarity: "rare", effectOneType: "stance", effectOneValue: 0};
-  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst", text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", effectOneType: "areaOfEffect", effectOneValue: 3 * mana};
+  // {color: "", cost: , name: "", text: "", rarity: "", effectType: "", effectSubtype: "", effectValue: };
+  lightAttack     = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectType: "damage", effectSubtype: "", effectValue: 5};
+  heavyAttack     = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectType: "damage", effectSubtype: "", effectValue: 10};
+  flay            = {color: "red", cost: 1, name: "Flay", text: "Deal 10 damage to a random enemy.", rarity: "common", effectType: "randomTargetDamage", effectSubtype: "", effectValue: 10};
+  berserkerStance = {color: "red", cost: 3, name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
+  block           = {color: "white", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectType: "armor", effectSubtype: "", effectValue: 5};
+  armorUp         = {color: "white", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectType: "armor", effectSubtype: "", effectValue: 10};
+  shieldToss      = {color: "white", cost: 2, name: "Shield Toss", text: "Deal 5 damage, gain 5 armor", rarity: "common", effectType: "damage", effectSubtype: "", effectValue: 10, effectTwoType: "armor", effectTwoValue: 5};
+  phalanxStance   = {color: "white", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
+  spiritStance    = {color: "purple", cost: 3, name: "Spirit Stance", text: "Every Turn, you gain 1 mana.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
+  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst", text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", effectTypeOne: "areaOfEffect", effectValue: 3 * mana};
 }
 
 function monsterSetup() {
@@ -541,55 +541,55 @@ function playCard() {
     beep("nope");
   }
   beep("cardCost: " + cardList[draggingCardID-1].cardCost);
-  if (cardList[draggingCardID-1].cardEffectOneType === "damage") {
+  if (cardList[draggingCardID-1].cardEffectType === "damage") {
     if (monsterOneSelected()) {
-      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
     else if (monsterTwoSelected()) {
-      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
     else if (monsterThreeSelected()) {
-      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
   }
-  else if (cardList[draggingCardID-1].cardEffectOneType === "armor") {
-    armor += cardList[draggingCardID-1].cardEffectOneValue;
+  else if (cardList[draggingCardID-1].cardEffectType === "armor") {
+    armor += cardList[draggingCardID-1].cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectOneType === "randomTargetDamage") {
-    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+  else if (cardList[draggingCardID-1].cardEffectType === "randomTargetDamage") {
+    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectOneType === "stance") {
+  else if (cardList[draggingCardID-1].cardEffectType === "stance") {
     currentStance = cardList[draggingCardID-1].cardName;
   }
-  else if (cardList[draggingCardID-1].cardEffectOneType === "areaOfEffect") {
+  else if (cardList[draggingCardID-1].cardEffectType === "areaOfEffect") {
     for (let i = 0; i < monsterList.length; i++) {
-      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectOneValue;
+      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
   }
 
-  if (cardList[draggingCardID-1].cardEffectTwoType === "damage") {
+  if (cardList[draggingCardID-1].cardEffectSubtype === "damage") {
     if (monsterOneSelected()) {
-      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
     else if (monsterTwoSelected()) {
-      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
     else if (monsterThreeSelected()) {
-      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
   }
-  else if (cardList[draggingCardID-1].cardEffectTwoType === "armor") {
-    armor += cardList[draggingCardID-1].cardEffectTwoValue;
+  else if (cardList[draggingCardID-1].cardEffectType === "armor") {
+    armor += cardList[draggingCardID-1].cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectTwoType === "randomTargetDamage") {
-    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+  else if (cardList[draggingCardID-1].cardEffectType === "randomTargetDamage") {
+    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectTwoType === "stance") {
+  else if (cardList[draggingCardID-1].cardEffectType === "stance") {
     currentStance = cardList[draggingCardID-1].name;
   }
-  else if (cardList[draggingCardID-1].cardEffectTwoType === "areaOfEffect") {
+  else if (cardList[draggingCardID-1].cardEffectType === "areaOfEffect") {
     for (let i = 0; i < monsterList.length; i++) {
-      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectTwoValue;
+      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
     }
   }
 }
@@ -600,13 +600,14 @@ function discardCard() {
   cardHandList.splice(draggingCardID-1, 1);
   assignHandValues();
 
-  cardList[cardHandList.length].cardColor          = "";
-  cardList[cardHandList.length].cardCost           = "";
-  cardList[cardHandList.length].cardName           = "";
-  cardList[cardHandList.length].cardText           = "";
-  cardList[cardHandList.length].cardRarity         = "";
-  cardList[cardHandList.length].cardEffectOneType  = "";
-  cardList[cardHandList.length].cardEffectOneValue = "";
+  cardList[cardHandList.length].cardColor       = "";
+  cardList[cardHandList.length].cardCost        = "";
+  cardList[cardHandList.length].cardName        = "";
+  cardList[cardHandList.length].cardText        = "";
+  cardList[cardHandList.length].cardRarity      = "";
+  cardList[cardHandList.length].cardEffectType  = "";
+  cardList[cardHandList.length].cardSubtype     = "";
+  cardList[cardHandList.length].cardEffectValue = "";
 }
 
 function assignHandValues() {
@@ -617,13 +618,14 @@ function assignHandValues() {
     cardList[i].cardInfo = cardHandList[i];
   }
   for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardColor          = cardList[i].cardInfo.color;
-    cardList[i].cardCost           = cardList[i].cardInfo.cost;
-    cardList[i].cardName           = cardList[i].cardInfo.name;
-    cardList[i].cardText           = cardList[i].cardInfo.text;
-    cardList[i].cardRarity         = cardList[i].cardInfo.rarity;
-    cardList[i].cardEffectOneType  = cardList[i].cardInfo.effectOneType;
-    cardList[i].cardEffectOneValue = cardList[i].cardInfo.effectOneValue;
+    cardList[i].cardColor       = cardList[i].cardInfo.color;
+    cardList[i].cardCost        = cardList[i].cardInfo.cost;
+    cardList[i].cardName        = cardList[i].cardInfo.name;
+    cardList[i].cardText        = cardList[i].cardInfo.text;
+    cardList[i].cardRarity      = cardList[i].cardInfo.rarity;
+    cardList[i].cardEffectType  = cardList[i].cardInfo.effectType;
+    cardList[i].cardEffectValue = cardList[i].cardInfo.effectValue;
+    cardList[i].cardSubtype     = cardList[i].cardInfo.effectSubtype;
   }
 }
 
