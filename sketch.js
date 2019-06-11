@@ -306,16 +306,16 @@ function cardSetup() {
 
 function cardStatSetup() {
   // {color: "", cost: , name: "", text: "", rarity: "", effectType: "", effectSubtype: "", effectValue: };
-  lightAttack     = {color: "red", cost: 1, name: "Light Attack", text: "Deal 5 damage.", rarity: "base", effectType: "damage", effectSubtype: "", effectValue: 5};
-  heavyAttack     = {color: "red", cost: 2, name: "Heavy Attack", text: "Deal 10 damage.", rarity: "base", effectType: "damage", effectSubtype: "", effectValue: 10};
-  flay            = {color: "red", cost: 1, name: "Flay", text: "Deal 10 damage to a random enemy.", rarity: "common", effectType: "randomTargetDamage", effectSubtype: "", effectValue: 10};
-  berserkerStance = {color: "red", cost: 3, name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
-  block           = {color: "white", cost: 1, name: "Block", text: "Gain 5 armor.", rarity: "base", effectType: "armor", effectSubtype: "", effectValue: 5};
-  armorUp         = {color: "white", cost: 2, name: "Armor Up", text: "Gain 10 armor", rarity: "common", effectType: "armor", effectSubtype: "", effectValue: 10};
-  shieldToss      = {color: "white", cost: 2, name: "Shield Toss", text: "Deal 5 damage, gain 5 armor", rarity: "common", effectType: "damage", effectSubtype: "", effectValue: 10, effectTwoType: "armor", effectTwoValue: 5};
-  phalanxStance   = {color: "white", cost: 3, name: "Phalanx Stance", text: "Every turn, you gain 5 armor.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
-  spiritStance    = {color: "purple", cost: 3, name: "Spirit Stance", text: "Every Turn, you gain 1 mana.", rarity: "rare", effectType: "stance", effectSubtype: "", effectValue: 0};
-  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst", text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", effectTypeOne: "areaOfEffect", effectValue: 3 * mana};
+  lightAttack     = {color: "red",    cost: 1,   name: "Light Attack",     text: "Deal 5 damage.",                                        rarity: "base",   effectType: "damage",       effectValue: 5,        effectSubtype: "",       effectSubType: };
+  heavyAttack     = {color: "red",    cost: 2,   name: "Heavy Attack",     text: "Deal 10 damage.",                                       rarity: "base",   effectType: "damage",       effectValue: 10,       effectSubtype: "",       effectSubType: };
+  flay            = {color: "red",    cost: 1,   name: "Flay",             text: "Deal 10 damage to a random enemy.",                     rarity: "common", effectType: "randomTarget", effectValue: 10,       effectSubtype: "damage", effectSubType: };
+  berserkerStance = {color: "red",    cost: 3,   name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.",          rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
+  block           = {color: "white",  cost: 1,   name: "Block",            text: "Gain 5 armor.",                                         rarity: "base",   effectType: "armor",        effectValue: 5,        effectSubtype: "",       effectSubType: };
+  armorUp         = {color: "white",  cost: 2,   name: "Armor Up",         text: "Gain 10 armor",                                         rarity: "common", effectType: "armor",        effectValue: 10,       effectSubtype: "",       effectSubType: };
+  shieldToss      = {color: "white",  cost: 2,   name: "Shield Toss",      text: "Deal 5 damage, gain 5 armor",                           rarity: "common", effectType: "damage",       effectValue: 10,       effectSubtype: "",       effectSubType: };
+  phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
+  spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
+  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", effectType: "areaOfEffect", effectValue: 3, effectSubType: "",      };
 }
 
 function monsterSetup() {
