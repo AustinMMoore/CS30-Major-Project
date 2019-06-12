@@ -543,41 +543,41 @@ function playCard() {
   beep("cardCost: " + cardInHand.cardCost);
 
 
-
-  if (cardInHand.cardTargetType === "single") {}
-
-
-
-
-
-
-
-  if (cardInHand.cardEffectType === "damage") {
-    if (monsterOneSelected()) {
-      monsterOne.monsterHealth -= cardInHand.cardEffectValue;
+  if (cardInHand.cardType === "damage") {
+    if (cardInHand.cardTargetType === "single") {
+      if (cardInHand.cardEffectType === "damage") {
+        if (monsterOneSelected) {
+          monsterOne.monsterHealth -= cardInHand.cardEffectValue;
+        }
+        else if (monsterTwoSelected) {
+          monsterTwo.monsterHealth -= cardInHand.cardEffectValue;
+        }
+        else if (monsterThreeSelected) {
+          monsterThree.monsterHealth -= cardInHand.cardEffectValue;
+        }
+      }
     }
-    else if (monsterTwoSelected()) {
-      monsterTwo.monsterHealth -= cardInHand.cardEffectValue;
+    if (cardInHand.cardTargetType === "random") {
+      if (cardInHand.cardEffectType === "damage") {
+        if (monsterOneSelected) {
+          monsterOne.monsterHealth -= cardInHand.cardEffectValue;
+        }
+        else if (monsterTwoSelected) {
+          monsterTwo.monsterHealth -= cardInHand.cardEffectValue;
+        }
+        else if (monsterThreeSelected) {
+          monsterThree.monsterHealth -= cardInHand.cardEffectValue;
+        }
+      }
     }
-    else if (monsterThreeSelected()) {
-      monsterThree.monsterHealth -= cardInHand.cardEffectValue;
+    if (cardInHand.cardTargetType === "AOE") {
+      if (cardInHand.cardEffectType === "damage") {}  
+        for (let i =0; i < monsterList.length; i++) {
+          monsterList[i].monsterHealth -= cardInHand.cardEffectValue;
+        }
+      }
     }
   }
-  else if (cardInHand.cardEffectType === "armor") {
-    armor += cardInHand.cardEffectValue;
-  }
-  else if (cardInHand.cardEffectType === "randomTargetDamage") {
-    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardInHand.cardEffectValue;
-  }
-  else if (cardInHand.cardEffectType === "stance") {
-    currentStance = cardInHand.cardName;
-  }
-  else if (cardInHand.cardEffectType === "areaOfEffect") {
-    for (let i = 0; i < monsterList.length; i++) {
-      monsterList[i].monsterHealth -= cardInHand.cardEffectValue;
-    }
-  }
-
 
 }
 
@@ -616,6 +616,7 @@ function assignHandValues() {
   rarity: "base"
   targetType: "single"
   text: "Deal 5 damage."
+
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardType         = cardList[i].cardInfo.type;
     cardList[i].cardColor        = cardList[i].cardInfo.color;
