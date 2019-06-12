@@ -571,7 +571,7 @@ function playCard() {
       }
     }
     if (cardInHand.cardTargetType === "AOE") {
-      if (cardInHand.cardEffectType === "damage") {}  
+      if (cardInHand.cardEffectType === "damage") {
         for (let i =0; i < monsterList.length; i++) {
           monsterList[i].monsterHealth -= cardInHand.cardEffectValue;
         }
