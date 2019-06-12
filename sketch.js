@@ -87,7 +87,8 @@ function setup() {
 let cardWidth = 150;
 let cardHeight = 240;
 let cardScalar = 1;
-let cardInHand = false;
+let cardIsInHand = false;
+let cardInHand;
 let draggingCardID;
 
 let gameState = "menu";
@@ -306,16 +307,16 @@ function cardSetup() {
 
 function cardStatSetup() {
   // {color: "", cost: , name: "", text: "", rarity: "", effectType: "", effectSubtype: "", effectValue: };
-  lightAttack     = {color: "red",    cost: 1,   name: "Light Attack",     text: "Deal 5 damage.",                                        rarity: "base",   effectType: "damage",       effectValue: 5,        effectSubtype: "",       effectSubType: };
-  heavyAttack     = {color: "red",    cost: 2,   name: "Heavy Attack",     text: "Deal 10 damage.",                                       rarity: "base",   effectType: "damage",       effectValue: 10,       effectSubtype: "",       effectSubType: };
-  flay            = {color: "red",    cost: 1,   name: "Flay",             text: "Deal 10 damage to a random enemy.",                     rarity: "common", effectType: "randomTarget", effectValue: 10,       effectSubtype: "damage", effectSubType: };
-  berserkerStance = {color: "red",    cost: 3,   name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.",          rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
-  block           = {color: "white",  cost: 1,   name: "Block",            text: "Gain 5 armor.",                                         rarity: "base",   effectType: "armor",        effectValue: 5,        effectSubtype: "",       effectSubType: };
-  armorUp         = {color: "white",  cost: 2,   name: "Armor Up",         text: "Gain 10 armor",                                         rarity: "common", effectType: "armor",        effectValue: 10,       effectSubtype: "",       effectSubType: };
-  shieldToss      = {color: "white",  cost: 2,   name: "Shield Toss",      text: "Deal 5 damage, gain 5 armor",                           rarity: "common", effectType: "damage",       effectValue: 10,       effectSubtype: "",       effectSubType: };
-  phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
-  spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   effectType: "stance",       effectValue: 0,        effectSubtype: "",       effectSubType: };
-  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", effectType: "areaOfEffect", effectValue: 3, effectSubType: "",      };
+  lightAttack     = {color: "red",    cost: 1,   name: "Light Attack",     text: "Deal 5 damage.",                                        rarity: "base",   type: "attack", targetType: "single", effectType: "damage", effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
+  heavyAttack     = {color: "red",    cost: 2,   name: "Heavy Attack",     text: "Deal 10 damage.",                                       rarity: "base",   type: "attack", targetType: "single", effectType: "damage", effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
+  flay            = {color: "red",    cost: 1,   name: "Flay",             text: "Deal 10 damage to a random enemy.",                     rarity: "common", type: "attack", targetType: "random", effectType: "damage", effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
+  berserkerStance = {color: "red",    cost: 3,   name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.",          rarity: "rare",   type: "stance", targetType: "NA",     effectType: "damage", effectValue: 0,  effectSubtype: "",      effectSubtypeValue: 0};
+  block           = {color: "white",  cost: 1,   name: "Block",            text: "Gain 5 armor.",                                         rarity: "base",   type: "defend", targetType: "NA",     effectType: "armor",  effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
+  armorUp         = {color: "white",  cost: 2,   name: "Armor Up",         text: "Gain 10 armor",                                         rarity: "common", type: "defend", targetType: "NA",     effectType: "armor",  effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
+  shieldToss      = {color: "white",  cost: 2,   name: "Shield Toss",      text: "Deal 5 damage, gain 5 armor",                           rarity: "common", type: "defend", targetType: "single", effectType: "damage", effectValue: 10, effectSubtype: "armor", effectSubtypeValue: 5};
+  phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   type: "stance", targetType: "NA",     effectType: "armor",  effectValue: 0,  effectSubtype: "",      effectSubtypeValue: 0};
+  spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   type: "stance", targetType: "NA",     effectType: "mana",   effectValue: 0,  effectSubtype: "",      effectSubtypeValue: 0};
+  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 2x that much to each enemy.", rarity: "common", type: "spell",  targetType: "AOE",    effectType: "damage", effectValue: 3,  effectSubType: "",      effectSubtypeValue: 0};
 }
 
 function monsterSetup() {
@@ -358,16 +359,16 @@ function monsterSetup() {
 
 //checks when the mouse is released
 function mouseReleased() {
-  if (turnPhase === "play" && monsterIsSelected() && cardInHand && (cardList[draggingCardID-1].cardCost <= mana || cardList[draggingCardID-1].cardCost === "X")) {
+  if (turnPhase === "play" && monsterIsSelected() && cardIsInHand && (cardInHand.cardCost <= mana || cardInHand.cardCost === "X")) {
     beep("Played:");
     beep("Card:" + draggingCardID);
-    beep("Cost:" + cardList[draggingCardID-1].cardCost);
+    beep("Cost:" + cardInHand.cardCost);
     playCard();
     discardCard();
   }
   beep(draggingCardID);
   draggingCardID = 0;
-  cardInHand = false;
+  cardIsInHand = false;
   ButtonReady = true;
 }
 
@@ -402,10 +403,10 @@ function keyPressed() {
 
 function cursorUpdate() {
   imageMode(CORNER);
-  if (cardInHand) {
-    cursorMode = "cardInHand";
+  if (cardIsInHand) {
+    cursorMode = "cardIsInHand";
   }
-  if (cardInHand && (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected())) {
+  if (cardIsInHand && (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected())) {
     cursorMode = "target";
   }
   else {
@@ -530,68 +531,54 @@ function drawCard(drawNumber) {
 }
 
 function playCard() {
-  if (cardList[draggingCardID-1].cardCost >= 0) {
-    mana -= cardList[draggingCardID-1].cardCost;
+  if (cardInHand.cardCost >= 0) {
+    mana -= cardInHand.cardCost;
   }
-  else if (cardList[draggingCardID-1].cardCost === "X") {
+  else if (cardInHand.cardCost === "X") {
     mana = 0;
-    beep("BOOP");
   }
   else {
-    beep("nope");
+    beep("Invalid cost");
   }
-  beep("cardCost: " + cardList[draggingCardID-1].cardCost);
-  if (cardList[draggingCardID-1].cardEffectType === "damage") {
+  beep("cardCost: " + cardInHand.cardCost);
+
+
+
+  if (cardInHand.cardTargetType === "single") {}
+
+
+
+
+
+
+
+  if (cardInHand.cardEffectType === "damage") {
     if (monsterOneSelected()) {
-      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
+      monsterOne.monsterHealth -= cardInHand.cardEffectValue;
     }
     else if (monsterTwoSelected()) {
-      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
+      monsterTwo.monsterHealth -= cardInHand.cardEffectValue;
     }
     else if (monsterThreeSelected()) {
-      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
+      monsterThree.monsterHealth -= cardInHand.cardEffectValue;
     }
   }
-  else if (cardList[draggingCardID-1].cardEffectType === "armor") {
-    armor += cardList[draggingCardID-1].cardEffectValue;
+  else if (cardInHand.cardEffectType === "armor") {
+    armor += cardInHand.cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectType === "randomTargetDamage") {
-    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
+  else if (cardInHand.cardEffectType === "randomTargetDamage") {
+    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardInHand.cardEffectValue;
   }
-  else if (cardList[draggingCardID-1].cardEffectType === "stance") {
-    currentStance = cardList[draggingCardID-1].cardName;
+  else if (cardInHand.cardEffectType === "stance") {
+    currentStance = cardInHand.cardName;
   }
-  else if (cardList[draggingCardID-1].cardEffectType === "areaOfEffect") {
+  else if (cardInHand.cardEffectType === "areaOfEffect") {
     for (let i = 0; i < monsterList.length; i++) {
-      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
+      monsterList[i].monsterHealth -= cardInHand.cardEffectValue;
     }
   }
 
-  if (cardList[draggingCardID-1].cardEffectSubtype === "damage") {
-    if (monsterOneSelected()) {
-      monsterOne.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
-    }
-    else if (monsterTwoSelected()) {
-      monsterTwo.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
-    }
-    else if (monsterThreeSelected()) {
-      monsterThree.monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
-    }
-  }
-  else if (cardList[draggingCardID-1].cardEffectType === "armor") {
-    armor += cardList[draggingCardID-1].cardEffectValue;
-  }
-  else if (cardList[draggingCardID-1].cardEffectType === "randomTargetDamage") {
-    monsterList[floor(random(1, 4)-1)].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
-  }
-  else if (cardList[draggingCardID-1].cardEffectType === "stance") {
-    currentStance = cardList[draggingCardID-1].name;
-  }
-  else if (cardList[draggingCardID-1].cardEffectType === "areaOfEffect") {
-    for (let i = 0; i < monsterList.length; i++) {
-      monsterList[i].monsterHealth -= cardList[draggingCardID-1].cardEffectValue;
-    }
-  }
+
 }
 
 function discardCard() {
@@ -617,15 +604,30 @@ function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardInfo = cardHandList[i];
   }
+
+  Type: "attack"
+  color: "red"
+  cost: 1
+  effectSubtypeValue: 0
+  effectSubtype: ""
+  effectType: "damage"
+  effectValue: 5
+  name: "Light Attack"
+  rarity: "base"
+  targetType: "single"
+  text: "Deal 5 damage."
   for (let i = 0; i < cardHandList.length; i++) {
-    cardList[i].cardColor       = cardList[i].cardInfo.color;
-    cardList[i].cardCost        = cardList[i].cardInfo.cost;
-    cardList[i].cardName        = cardList[i].cardInfo.name;
-    cardList[i].cardText        = cardList[i].cardInfo.text;
-    cardList[i].cardRarity      = cardList[i].cardInfo.rarity;
-    cardList[i].cardEffectType  = cardList[i].cardInfo.effectType;
-    cardList[i].cardEffectValue = cardList[i].cardInfo.effectValue;
-    cardList[i].cardSubtype     = cardList[i].cardInfo.effectSubtype;
+    cardList[i].cardType         = cardList[i].cardInfo.type;
+    cardList[i].cardColor        = cardList[i].cardInfo.color;
+    cardList[i].cardCost         = cardList[i].cardInfo.cost;
+    cardList[i].cardName         = cardList[i].cardInfo.name;
+    cardList[i].cardText         = cardList[i].cardInfo.text;
+    cardList[i].cardRarity       = cardList[i].cardInfo.rarity;
+    cardList[i].cardTargetType   = cardList[i].cardInfo.targetType;
+    cardList[i].cardEffectType   = cardList[i].cardInfo.effectType;
+    cardList[i].cardEffectValue  = cardList[i].cardInfo.effectValue;
+    cardList[i].cardSubtype      = cardList[i].cardInfo.effectSubtype;
+    cardList[i].cardSubtypeValue = cardList[i].cardInfo.effectSubtypeValue;
   }
 }
 
@@ -754,19 +756,20 @@ class Card {
 
   //moves the card when it is dragged with the cursor (avoids creating stacks of cards)
   moveCard() {
-    if (this.isClicked() && !cardInHand) {
-      cardInHand = true;
+    if (this.isClicked() && !cardIsInHand) {
+      cardIsInHand = true;
       draggingCardID = this.cardID;
+      cardInHand = cardList[draggingCardID-1];
     }
-    if (cardInHand && draggingCardID === this.cardID) {
+    if (cardIsInHand && draggingCardID === this.cardID) {
       this.x = mouseX;
       this.y = mouseY;
     }
-    if (!cardInHand) {
+    if (!cardIsInHand) {
       this.x = this.originalX;
       this.y = this.originalY;
     }
-    if (cardInHand) {
+    if (cardIsInHand) {
       ButtonReady = false;
     }
   }
