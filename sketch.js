@@ -12,46 +12,47 @@
 function preload() {
   soundFormats("mp3");
   backgroundMusic = loadSound("assets/sounds/backgroundMusic.mp3");
-  buttonClick = loadSound("assets/sounds/buttonClick.mp3");
-  cardPickUp = loadSound("assets/sounds/cardPickUp.mp3");
-  cardDraw = loadSound("assets/sounds/cardDraw.mp3");
-  deckShuffle = loadSound("assets/sounds/deckShuffle.mp3");
+  buttonClick     = loadSound("assets/sounds/buttonClick.mp3");
+  cardPickUp      = loadSound("assets/sounds/cardPickUp.mp3");
+  cardDraw        = loadSound("assets/sounds/cardDraw.mp3");
+  deckShuffle     = loadSound("assets/sounds/deckShuffle.mp3");
 
-  blueButton = loadImage("assets/buttons/blueNotClicked.png");
-  blueButtonClicked = loadImage("assets/buttons/blueClicked.png");
-  greenButton = loadImage("assets/buttons/greenNotClicked.png");
-  greenButtonClicked = loadImage("assets/buttons/greenClicked.png");
-  yellowButton = loadImage("assets/buttons/yellowNotClicked.png");
-  yellowButtonClicked = loadImage("assets/buttons/yellowClicked.png");
-  yellowSmallButton = loadImage("assets/buttons/yellowSmallNotClicked.png");
+  blueButton               = loadImage("assets/buttons/blueNotClicked.png");
+  blueButtonClicked        = loadImage("assets/buttons/blueClicked.png");
+  greenButton              = loadImage("assets/buttons/greenNotClicked.png");
+  greenButtonClicked       = loadImage("assets/buttons/greenClicked.png");
+  yellowButton             = loadImage("assets/buttons/yellowNotClicked.png");
+  yellowButtonClicked      = loadImage("assets/buttons/yellowClicked.png");
+  yellowSmallButton        = loadImage("assets/buttons/yellowSmallNotClicked.png");
   yellowSmallButtonClicked = loadImage("assets/buttons/yellowSmallClicked.png");
 
-  whiteCard = loadImage("assets/cards/whitecard.png");
-  blueCard = loadImage("assets/cards/bluecard.png");
-  greenCard = loadImage("assets/cards/greencard.png");
-  redCard = loadImage("assets/cards/redcard.png");
+  whiteCard  = loadImage("assets/cards/whitecard.png");
+  blueCard   = loadImage("assets/cards/bluecard.png");
+  greenCard  = loadImage("assets/cards/greencard.png");
+  redCard    = loadImage("assets/cards/redcard.png");
   yellowCard = loadImage("assets/cards/yellowcard.png");
   purpleCard = loadImage("assets/cards/purpleCard.png");
-  cardBack = loadImage("assets/cards/cardBack.png");
+  cardBack   = loadImage("assets/cards/cardBack.png");
 
-  menuBackground = loadImage("assets/backgrounds/menuBackground.jpg");
+  menuBackground       = loadImage("assets/backgrounds/menuBackground.jpg");
   dungeonBackgroundTwo = loadImage("assets/backgrounds/dungeonOne.jpg");
   dungeonBackgroundOne = loadImage("assets/backgrounds/dungeonTwo.png");
-  forestBackgroundOne = loadImage("assets/backgrounds/forestOne.jpg");
-  optionsBackground = loadImage("assets/backgrounds/optionsBackground.jpg");
+  forestBackgroundOne  = loadImage("assets/backgrounds/forestOne.jpg");
+  optionsBackground    = loadImage("assets/backgrounds/optionsBackground.jpg");
 
-  chomperMonsterImage = loadImage("assets/monsters/chomper.png");
-  blueBeanMonsterImage = loadImage("assets/monsters/blueBean.png");
+  chomperMonsterImage    = loadImage("assets/monsters/chomper.png");
+  blueBeanMonsterImage   = loadImage("assets/monsters/blueBean.png");
   spikySlimeMonsterImage = loadImage("assets/monsters/spikySlime.png");
-  dizzyMonsterImage = loadImage("assets/monsters/dizzy.png");
-  fireDemonMonsterImage = loadImage("assets/monsters/fireDemon.png");
+  dizzyMonsterImage      = loadImage("assets/monsters/dizzy.png");
+  fireDemonMonsterImage  = loadImage("assets/monsters/fireDemon.png");
 
   standardCursor = loadImage("assets/cursors/standard.png");
-  targetCursor = loadImage("assets/cursors/target.png");
+  targetCursor   = loadImage("assets/cursors/target.png");
 
-  manaStar = loadImage("assets/symbols/manaStar.png");
+  manaStar    = loadImage("assets/symbols/manaStar.png");
   healthHeart = loadImage("assets/symbols/healthHeart.png");
   armorShield = loadImage("assets/symbols/armorShield.png");
+  goldBag     = loadImage("assets/symbols/goldBag.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -77,8 +78,10 @@ function setup() {
 
   cursorSpriteList = [standardCursor, targetCursor];
 
-  manaStarPosition = [width * 1/15, height * 13/15];
-  armorShieldPosition = [width * 2/15, height * 13/15];
+  manaStarPosition    = {x: width * 1/15 - 30, y: height * 13/15};
+  goldBagPosition     = {x: width * 2/15 - 30, y: height * 13/15};
+  armorShieldPosition = {x: width * 3/15 - 30, y: height * 13/15};
+  healthHeartPosition = {x: width * 4/15 - 30, y: height * 13/15};
 }
 
 //setup all the variables
@@ -117,15 +120,18 @@ let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
-let manaStar, healthHeart, armorShield;
-let manaStarPosition, armorShieldPosition;
-let manaStarSize = 75;
-let healthHeartSize = 75;
-let armorShieldSize = 75;
+let manaStar, goldBag, armorShield, healthHeart;
+let manaStarPosition, goldBagPosition, armorShieldPosition, healthHeartPosition;
+let manaStarSize    = 100;
+let goldBagSize     = 100;
+let armorShieldSize = 100;
+let healthHeartSize = 100;
 
 let mana = 0;
 let maxMana = 3;
+let gold = 0;
 let armor = 0;
+let health = 100;
 
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
@@ -142,7 +148,7 @@ let monsterType;
 let monsterImageX;
 let monsterImageY;
 
-let heavyAttack, lightAttack, flay;
+let heavyAttack, lightAttack, flay, fanOfBlades;
 let block, armorUp, shieldToss;
 let manaBurst;
 let phalanxStance, spiritStance, berserkerStance;
@@ -208,11 +214,17 @@ function displayGame() {
     cardBehavior();
     backPlayButton.show();
     endTurnButton.show();
-    image(manaStar, manaStarPosition[0], manaStarPosition[1], manaStarSize, manaStarSize);
-    text(mana, manaStarPosition[0], manaStarPosition[1] + 12);
+    image(manaStar, manaStarPosition.x, manaStarPosition.y, manaStarSize, manaStarSize);
+    text(mana, manaStarPosition.x, manaStarPosition.y + 12);
     fill(0);
-    image(armorShield, armorShieldPosition[0], armorShieldPosition[1], armorShieldSize - 10, armorShieldSize);
-    text(armor, armorShieldPosition[0], armorShieldPosition[1] + 5);
+    image(armorShield, armorShieldPosition.x, armorShieldPosition.y, armorShieldSize - 10, armorShieldSize);
+    text(armor, armorShieldPosition.x, armorShieldPosition.y + 5);
+    fill(0);
+    image(goldBag, goldBagPosition.x, goldBagPosition.y, goldBagSize, goldBagSize);
+    text(gold, goldBagPosition.x - 5, goldBagPosition.y + 10);
+    fill(255);
+    image(healthHeart, healthHeartPosition.x, healthHeartPosition.y, healthHeartSize, healthHeartSize);
+    text(health, healthHeartPosition.x, healthHeartPosition.y);
     if (backPlayButton.isClicked() && ButtonReady) {
       gameState = "menu";
     }
@@ -313,7 +325,7 @@ function cardStatSetup() {
   phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   type: "stance", targetType: "none",   effectType: "armor",   effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
   spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   type: "stance", targetType: "none",   effectType: "mana",    effectValue: 1,  effectSubtype: "",      effectSubtypeValue: 0};
   manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 2x that much to each enemy.", rarity: "common", type: "spell",  targetType: "AOE",    effectType: "damage",  effectValue: 3,  effectSubType: "",      effectSubtypeValue: 0};
-  fanOfBlades     = {color: "red",    cost: 2,   name: "Fan of Blades",    text: "Deal 3 damage to each enemy.",                          rarity: "common", type: "attack", targetType: "AOE",    effectType: "damage",  effectValue: 3,  effectSubtype: "",      effectSubtypeValue: 0}
+  fanOfBlades     = {color: "red",    cost: 2,   name: "Fan of Blades",    text: "Deal 3 damage to each enemy.",                          rarity: "common", type: "attack", targetType: "AOE",    effectType: "damage",  effectValue: 3,  effectSubtype: "",      effectSubtypeValue: 0};
 }
 
 function monsterSetup() {
@@ -634,18 +646,6 @@ function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardInfo = cardHandList[i];
   }
-
-  Type: "attack"
-  color: "red"
-  cost: 1
-  effectSubtypeValue: 0
-  effectSubtype: ""
-  effectType: "damage"
-  effectValue: 5
-  name: "Light Attack"
-  rarity: "base"
-  targetType: "single"
-  text: "Deal 5 damage."
 
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardType         = cardList[i].cardInfo.type;
