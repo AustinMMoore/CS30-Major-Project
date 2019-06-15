@@ -53,6 +53,13 @@ function preload() {
   healthHeart = loadImage("assets/symbols/healthHeart.png");
   armorShield = loadImage("assets/symbols/armorShield.png");
   goldBag     = loadImage("assets/symbols/goldBag.png");
+  playerBurn  = loadImage("assets/symbols/playerBurn.png");
+
+  enemyArmor   = loadImage("assets/symbols/enemyArmor.png");
+  enemyAttack  = loadImage("assets/symbols/enemyAttack.png");
+  enemyBuff    = loadImage("assets/symbols/enemyBuff.png");
+  enemyDebuff  = loadImage("assets/symbols/enemyDebuff.png");
+  enemyHeal    = loadImage("assets/symbols/enemyHeal.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -120,18 +127,25 @@ let standardCursor, targetCursor;
 let cursorSpriteList;
 let cursorMode = "standard";
 
-let manaStar, goldBag, armorShield, healthHeart;
+let manaStar, goldBag, armorShield, healthHeart, playerBurn;
+let enemyArmor, enemyAttack, enemyBuff, enemyDebuff, enemyHeal;
+let enemyIntentIconSize = 100;
 let manaStarPosition, goldBagPosition, armorShieldPosition, healthHeartPosition;
 let manaStarSize    = 100;
 let goldBagSize     = 100;
 let armorShieldSize = 100;
 let healthHeartSize = 100;
+let playerBurnSize  = 100;
 
 let mana = 0;
 let maxMana = 3;
+let manaDebuff = 0;
 let gold = 0;
 let armor = 0;
 let health = 100;
+let burn = 0;
+
+let intentArmor, intentHeal, intentDamage;
 
 let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
 let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
@@ -169,10 +183,6 @@ function draw() {
   displayGame();
   displayOptions();
   cursorUpdate();
-
-  if (monsterOneSelected) {
-    //beep(1);
-  }
 }
 
 function beep(output) {
@@ -212,19 +222,9 @@ function displayGame() {
     }
     monsterBehavior();
     cardBehavior();
+    displayPlayerStats();
     backPlayButton.show();
     endTurnButton.show();
-    image(manaStar, manaStarPosition.x, manaStarPosition.y, manaStarSize, manaStarSize);
-    text(mana, manaStarPosition.x, manaStarPosition.y + 12);
-    fill(0);
-    image(armorShield, armorShieldPosition.x, armorShieldPosition.y, armorShieldSize - 10, armorShieldSize);
-    text(armor, armorShieldPosition.x, armorShieldPosition.y + 5);
-    fill(0);
-    image(goldBag, goldBagPosition.x, goldBagPosition.y, goldBagSize, goldBagSize);
-    text(gold, goldBagPosition.x - 5, goldBagPosition.y + 10);
-    fill(255);
-    image(healthHeart, healthHeartPosition.x, healthHeartPosition.y, healthHeartSize, healthHeartSize);
-    text(health, healthHeartPosition.x, healthHeartPosition.y);
     if (backPlayButton.isClicked() && ButtonReady) {
       gameState = "menu";
     }
@@ -349,13 +349,13 @@ function monsterSetup() {
     monsterList[i].yPosition = monsterLocationList[i].y;
   }
 
-  //name, imageNumber, health, gold, attackOne, attackTwo, attackThree
+  //name, imageNumber, health, gold, monsterAttacks
 
-  chomperMonster    = {name: "Chomper",     image: chomperMonsterImage,    health: 25, gold: 55, attackOne: "Bite",     attackTwo: "Consume", attackThree: "Defend"};
-  blueBeanMonster   = {name: "Blue Bean",   image: blueBeanMonsterImage,   health: 20, gold: 50, attackOne: "Slap",     attackTwo: "Smack",   attackThree: "Defend"};
-  spikySlimeMonster = {name: "Spiky Slime", image: spikySlimeMonsterImage, health: 30, gold: 60, attackOne: "Slap",     attackTwo: "SpikeUp", attackThree: "Defend"};
-  dizzyMonster      = {name: "Dizzy",       image: dizzyMonsterImage,      health: 20, gold: 45, attackOne: "Hypnosis", attackTwo: "Smack",   attackThree: "Defend"};
-  fireDemonMonster  = {name: "Fire Demon",  image: fireDemonMonsterImage,  health: 25, gold: 55, attackOne: "Burn",     attackTwo: "Smack",   attackThree: "Defend"};
+  chomperMonster    = {name: "Chomper",     image: chomperMonsterImage,    health: 25, gold: 55, monsterAttacks: ["Bite", "Consume",  "Defend"]};
+  blueBeanMonster   = {name: "Blue Bean",   image: blueBeanMonsterImage,   health: 20, gold: 50, monsterAttacks: ["Bite", "Heal",     "Defend"]};
+  spikySlimeMonster = {name: "Spiky Slime", image: spikySlimeMonsterImage, health: 30, gold: 60, monsterAttacks: ["Slap", "SpikeUp",  "Defend"]};
+  dizzyMonster      = {name: "Dizzy",       image: dizzyMonsterImage,      health: 20, gold: 45, monsterAttacks: ["Slap", "Hypnosis", "Defend"]};
+  fireDemonMonster  = {name: "Fire Demon",  image: fireDemonMonsterImage,  health: 25, gold: 55, monsterAttacks: ["Slap", "Burn",     "Defend"]};
 
   chomperMonster.monsterImage    = chomperMonsterImage;
   blueBeanMonster.monsterImage   = blueBeanMonsterImage;
@@ -447,12 +447,12 @@ function spawnMonsters() {
       monsterList[i].monsterHealth      = monsterTypeList[randomTypeNumber].health;
       monsterList[i].monsterMaxHealth   = monsterTypeList[randomTypeNumber].health;
       monsterList[i].monsterGold        = monsterTypeList[randomTypeNumber].gold;
-      monsterList[i].monsterAttackOne   = monsterTypeList[randomTypeNumber].attackOne;
-      monsterList[i].monsterAttackTwo   = monsterTypeList[randomTypeNumber].attackTwo;
-      monsterList[i].monsterAttackThree = monsterTypeList[randomTypeNumber].attackThree;
+      monsterList[i].monsterAttacks     = monsterTypeList[randomTypeNumber].monsterAttacks;
+    }
+    for (let i = 0; i < monsterList.length; i++) {
+      monsterList[i].selectedAttack = monsterList[i].monsterAttacks[floor(random(0, monsterList[i].monsterAttacks.length))];
     }
   }
-
   monstersSpawned = true;
 }
 
@@ -492,6 +492,18 @@ function monsterIsSelected() {
   }
 }
 
+function selectedMonster() {
+  if (monsterOneSelected()) {
+    return monsterList[0];
+  }
+  else if (monsterTwoSelected()) {
+    return monsterList[1];
+  }
+  else if (monsterThreeSelected()) {
+    return monsterList[2];
+  }
+}
+
 function shuffleDeck() {
   cardDeckList = shuffle(cardDeckList);
   deckShuffle.play();
@@ -525,6 +537,25 @@ function stanceAction() {
       mana += currentStanceValue;
     }
   }
+}
+
+function displayPlayerStats() {
+  textSize(25);
+  image(manaStar, manaStarPosition.x, manaStarPosition.y, manaStarSize, manaStarSize);
+  text(mana, manaStarPosition.x, manaStarPosition.y + 12);
+  fill(0);
+  image(armorShield, armorShieldPosition.x, armorShieldPosition.y, armorShieldSize - 10, armorShieldSize);
+  text(armor, armorShieldPosition.x, armorShieldPosition.y + 5);
+  fill(0);
+  image(goldBag, goldBagPosition.x, goldBagPosition.y, goldBagSize, goldBagSize);
+  text(gold, goldBagPosition.x - 5, goldBagPosition.y + 10);
+  if (burn > 0) {
+    image(playerBurn, healthHeartPosition.x, healthHeartPosition.y - 100, playerBurnSize, playerBurnSize);
+    text(burn, healthHeartPosition.x, healthHeartPosition.y - 85);
+  }
+  fill(255);
+  image(healthHeart, healthHeartPosition.x, healthHeartPosition.y, healthHeartSize, healthHeartSize);
+  text(health, healthHeartPosition.x, healthHeartPosition.y);
 }
 
 //function that adds card from the deck into the player's hand
@@ -662,6 +693,7 @@ function assignHandValues() {
   }
 }
 
+
 /* 
 - upkeepStep
 - drawStep
@@ -688,9 +720,18 @@ function playerTurn() {
 }
 
 function upkeepStep() {
-  mana = maxMana;
+  mana = maxMana - manaDebuff;
+  manaDebuff = 0;
   armor = 0;
   turnCounter += 1;
+  health -= burn;
+  if (burn > 0) {
+    burn -= 1;
+  }
+  for (let i = 0; i < monsterList.length; i++) {
+    monsterList[i].monsterSpikes = 0;
+    monsterList[i].monsterArmor = 0;
+  }
   stanceAction();
 }
 
@@ -707,7 +748,6 @@ function drawStep() {
 function playStep() {
   if (endTurnButton.isClicked() && ButtonReady) {
     ButtonReady = false;
-    //monstersSpawned = false;
     turnPhase = "end";
   }
 }
@@ -720,6 +760,10 @@ function endStep() {
 }
 
 function enemyTurn() {
+  for (let i = 0; i < monsterList.length; i++) {
+    monsterList[i].monsterAttack();
+    monsterList[i].selectedAttack = monsterList[i].monsterAttacks[floor(random(0, monsterList[i].monsterAttacks.length))];
+  }
   turnPhase = "upkeep";
 }
 //defines the class used for the card's behavior
@@ -878,7 +922,7 @@ class Monster {
     this.yPosition = 0;
   }
 
-  displayHealth() {
+  displayStats() {
     if (this.monsterHealth > 0) {
       rectMode(CORNER);
       fill("black");
@@ -897,12 +941,96 @@ class Monster {
     }
   }
 
+  monsterAttack() {
+    let damageToPlayer = 0;
+    let monsterHeal = 0;
+    let monsterArmorGain = 0;
+    let monsterSpikesGain = 0;
+  
+    if (this.selectedAttack === "Slap") {
+      damageToPlayer = 5;
+    }
+    else if (this.selectedAttack === "Bite") {
+      damageToPlayer = 5;
+    }
+    else if (this.selectedAttack === "Consume") {
+      damageToPlayer = 3;
+      monsterHeal = 3;
+    }
+    else if (this.selectedAttack === "Defend") {
+      monsterArmorGain = 5;
+    }
+    else if (this.selectedAttack === "Heal") {
+      monsterHeal = 10;
+    }
+    else if (this.selectedAttack === "Hypnosis") {
+      manaDebuff += 1;
+    }
+    else if (this.selectedAttack === "Burn") {
+      burn += 3;
+    }
+    else if (this.selectedAttack === "SpikeUp") {
+      monsterSpikesGain = 3;
+    }
+  
+    if (this.monsterHealth <= this.monsterMaxHealth - monsterHeal) {
+      this.monsterHealth += monsterHeal;
+    }
+    health -= damageToPlayer;
+    this.monsterArmor += monsterArmorGain;
+    this.monsterSpikes = monsterSpikesGain;
+  }
+
   displayIntent() {
-    
+    intentDamage = 0;
+    intentHeal = 0;
+    intentArmor = 0;
+    if (this.selectedAttack === "Slap") {
+      intentDamage = 5;
+    }
+    else if (this.selectedAttack === "Bite") {
+      intentDamage = 5;
+    }
+    else if (this.selectedAttack === "Consume") {
+      intentDamage = 3;
+      intentHeal = 3;
+    }
+    else if (this.selectedAttack === "Defend") {
+      intentArmor = 5;
+    }
+    else if (this.selectedAttack === "Heal") {
+      intentHeal = 10;
+    }
+
+    if (this.selectedAttack === "Slap" || this.selectedAttack === "Bite" || this.selectedAttack === "Consume") {
+      image(enemyAttack, this.xPosition - 30, this.yPosition - 150, enemyIntentIconSize, enemyIntentIconSize);
+      fill("red");
+      textSize(60);
+      text(intentDamage, this.xPosition + 30, this.yPosition - 120);
+    }
+    else if (this.selectedAttack === "Defend") {
+      image(enemyArmor, this.xPosition, this.yPosition - 160, enemyIntentIconSize, enemyIntentIconSize);
+      fill(0);
+      textSize(60);
+      text(intentArmor, this.xPosition, this.yPosition - 140);
+    }
+    else if (this.selectedAttack === "Heal") {
+      image(enemyHeal, this.xPosition - 35, this.yPosition - 150, enemyIntentIconSize, enemyIntentIconSize);
+      fill("red");
+      textSize(60);
+      text(intentHeal, this.xPosition + 35, this.yPosition - 130);
+    }
+    else if (this.selectedAttack === "Burn" || this.selectedAttack === "Hypnosis") {
+      image(enemyDebuff, this.xPosition, this.yPosition - 150, enemyIntentIconSize, enemyIntentIconSize);
+    }
+    else if (this.selectedAttack === "SpikeUp") {
+      image(enemyBuff, this.xPosition, this.yPosition - 160, enemyIntentIconSize, enemyIntentIconSize);
+    }
   }
 
   behavior() {
-    this.displayHealth();
+    this.displayStats();
     this.displayMonster();
+    this.displayIntent();
   }
 }
