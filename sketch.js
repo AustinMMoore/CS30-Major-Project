@@ -38,7 +38,7 @@ function preload() {
   dungeonBackgroundTwo = loadImage("assets/backgrounds/dungeonOne.jpg");
   dungeonBackgroundOne = loadImage("assets/backgrounds/dungeonTwo.png");
   forestBackgroundOne  = loadImage("assets/backgrounds/forestOne.jpg");
-  optionsBackground    = loadImage("assets/backgrounds/optionsBackground.jpg");
+  optionsBackground    = loadImage("assets/backgrounds/optionsBackground.png");
 
   chomperMonsterImage    = loadImage("assets/monsters/chomper.png");
   blueBeanMonsterImage   = loadImage("assets/monsters/blueBean.png");
@@ -60,6 +60,10 @@ function preload() {
   enemyBuff    = loadImage("assets/symbols/enemyBuff.png");
   enemyDebuff  = loadImage("assets/symbols/enemyDebuff.png");
   enemyHeal    = loadImage("assets/symbols/enemyHeal.png");
+
+  instructionsText = loadStrings("assets/text/instructions.txt");
+
+  instructionsSheet = loadImage("assets/symbols/instructionsSheet.png");
 }
 
 //sets up the canvas, center modes (rect, text, image), playmodes for sounds, and runs the setup for the cards
@@ -120,7 +124,7 @@ let cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSe
 let cardDisplayMap = new Map();
 let deckLocation;
 
-let playButton, optionsButton, quitButton, darkOptionButton, lightOptionButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton;
+let playButton, optionsButton, quitButton, instructionsButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton, continueButtonNo, continueButtonYes;
 let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
 
 let standardCursor, targetCursor;
@@ -174,6 +178,8 @@ let cardHandList = [];
 let turnCounter = 0;
 let turnPhase = "upkeep";
 
+let instructionsText;
+let instructionsSheet;
 
 //main draw loop of the code
 function draw() {
@@ -182,6 +188,8 @@ function draw() {
   displayMenu();
   displayGame();
   displayOptions();
+  displayInstructions();
+  displayGameOver();
   cursorUpdate();
 }
 
@@ -235,11 +243,12 @@ function displayGame() {
 function displayOptions() {
   if (gameState === "options") {
     image(optionsBackground, width/2, height/2, width, height);
-    lightOptionButton.show();
-    darkOptionButton.show();
+    instructionsButton.show();
     soundOptionButton.show();
     backOptionButton.show();
-
+    if (instructionsButton.isClicked() && ButtonReady) {
+      gameState = "instructions";
+    }
     if (soundOptionButton.isClicked() && ButtonReady) {
       soundMute = !soundMute;
       ButtonReady = false;
@@ -248,6 +257,50 @@ function displayOptions() {
       gameState = "menu";
     }
   }
+}
+
+function displayInstructions() {
+  if (gameState === "instructions") {
+    textAlign(LEFT);
+    image(optionsBackground, width/2, height/2, width, height);
+    backPlayButton.show();
+    fill("turquoise");
+    text(instructionsText[0], width/2, height/2 - 200, width - 100, 200);
+    text(instructionsText[1], width/2, height/2 - 100, width - 100, 200);
+    text(instructionsText[2], width/5, height/2, width/2 - 110, 200);
+    image(instructionsSheet, width/2 + 275, height/2 + 200, 800, 640);
+    if (backPlayButton.isClicked() && ButtonReady) {
+      gameState = "options";
+    }
+  }
+  //textAlign(CENTER);
+}
+
+function displayGameOver() {
+  if (gameState === "gameOver") {
+    image(dungeonBackgroundOne, width/2, height/2, width, height);
+    fill("white");
+    text("You were defeated, but there are always more monsters to defeat. Continue fighting?", width/2, height/2);
+    continueButtonYes.show();
+    continueButtonNo.show();
+    if (continueButtonYes.isClicked() && ButtonReady) {
+      gameState = "game";
+      resetGame();
+    }
+    if (continueButtonNo.isClicked() && ButtonReady) {
+      gameState = "menu";
+    }
+  }
+}
+
+function resetGame() {
+  monstersSpawned = false;
+  health = 100;
+  burn = 0;
+  gold = 0;
+  mana = 3;
+  discardHand();
+  shuffleDeck();
 }
 
 //the main function to call each card's behavior
@@ -280,15 +333,16 @@ function windowResized() {
 
 //sets up the buttons used throughout the code in their according classes
 function buttonSetup() {
-  playButton        = new Button(width/2, height/4, 300, 200, "Play", 40, "white", blueButtonClicked, blueButton);
-  optionsButton     = new Button(width/2, height/2, 250, 150, "Options", 30, "white", blueButtonClicked, blueButton);
-  quitButton        = new Button(width/2, height * (14/20), 200, 100, "Quit", 30, "white", blueButtonClicked, blueButton);
-  darkOptionButton  = new Button(width/2, height * (1/5), 250, 150, "Dark Theme", 30, "white",blueButtonClicked, blueButton);
-  lightOptionButton = new Button(width/2, height * (2/5), 250, 150, "Light Theme", 30, "white", blueButtonClicked, blueButton);
-  soundOptionButton = new Button(width/2, height * (3/5), 250, 150, "Toggle Sound", 30, "white", blueButtonClicked, blueButton);
-  backOptionButton  = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
-  backPlayButton    = new Button(75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
-  endTurnButton     = new Button(width - 100, width * (1/4), 200, 100, "End Turn", 25, "white", yellowButtonClicked, yellowButton);
+  playButton         = new Button(width/2, height/4, 300, 200, "Play", 40, "white", blueButtonClicked, blueButton);
+  optionsButton      = new Button(width/2, height/2, 250, 150, "Options", 30, "white", blueButtonClicked, blueButton);
+  quitButton         = new Button(width/2, height * (14/20), 200, 100, "Quit", 30, "white", blueButtonClicked, blueButton);
+  instructionsButton = new Button(width/2, height * (2/5) - 50, 250, 150, "Instructions", 30, "white", blueButtonClicked, blueButton);
+  soundOptionButton  = new Button(width/2, height * (3/5) + 50, 250, 150, "Toggle Sound", 30, "white", blueButtonClicked, blueButton);
+  backOptionButton   = new Button(width - 75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  backPlayButton     = new Button(75, 75, 150, 150, "Back", 30, "black", yellowSmallButtonClicked, yellowSmallButton);
+  endTurnButton      = new Button(width - 100, width * (1/4), 200, 100, "End Turn", 25, "white", yellowButtonClicked, yellowButton);
+  continueButtonYes  = new Button(width/2 - 150, height/2 + 100, 200, 100, "Yes", 25, "white", greenButtonClicked, greenButton);
+  continueButtonNo   = new Button(width/2 + 150, height/2 + 100, 200, 100, "No", 25, "white", greenButtonClicked, greenButton);
 }
 
 //sets up the cards used in the game as separate entities
@@ -404,10 +458,6 @@ function checkMute() {
 }
 
 function keyPressed() {
-  if (key === " ") {
-    monstersSpawned = false;
-    //nextTurn();
-  }
   if (key === "s" || key === "S") {
     monstersSpawned = false;
   }
@@ -437,10 +487,19 @@ function cursorUpdate() {
 
 function spawnMonsters() {
   if (!monstersSpawned) {
+    for (let i = 0; i < monsterList.length; i++) {
+      monsterList[i].monsterSpikes = 0;
+      monsterList[i].monsterArmor = 0;
+      monsterList[i].monsterMaxArmor = 0;
+      monsterList[i].monsterHealth = monsterList[i].monsterMaxHealth;
+    }
+
     for (let i = 0; i < 3; i++) {
       let randomTypeNumber = floor(random(1, monsterTypeList.length));
       monsterList[i].xPosition = monsterLocationList[i].x;
       monsterList[i].yPosition = monsterLocationList[i].y;
+
+      monsterList[i].isAlive = true;
 
       monsterList[i].monsterName        = monsterTypeList[randomTypeNumber].name;
       monsterList[i].monsterImage       = monsterTypeList[randomTypeNumber].image;
@@ -604,6 +663,9 @@ function drawCard(drawNumber) {
 
 function playCard() {
   let xCost = mana;
+  let damageToMonsterOne = 0;
+  let damageToMonsterTwo = 0;
+  let damageToMonsterThree = 0;
   cardPickUp.play();
   if (cardInHand.cardCost >= 0) {
     mana -= cardInHand.cardCost;
@@ -624,26 +686,38 @@ function playCard() {
   else if (cardInHand.cardTargetType === "single") {
     if (cardInHand.cardEffectType === "damage") {
       if (monsterOneSelected()) {
-        monsterOne.monsterHealth -= cardInHand.cardEffectValue;
+        damageToMonsterOne += cardInHand.cardEffectValue;
       }
       else if (monsterTwoSelected()) {
-        monsterTwo.monsterHealth -= cardInHand.cardEffectValue;
+        damageToMonsterTwo += cardInHand.cardEffectValue;
       }
       else if (monsterThreeSelected()) {
-        monsterThree.monsterHealth -= cardInHand.cardEffectValue;
+        damageToMonsterThree += cardInHand.cardEffectValue;
       }
     }
   }
   else if (cardInHand.cardTargetType === "random") {
     if (cardInHand.cardEffectType === "damage") {
-      monsterList[floor(random(0, monsterList.length))].monsterHealth -= cardInHand.cardEffectValue;
+      let chosenMonster = floor(random(0, monsterList.length));
+      while (!monsterList[chosenMonster].isAlive) {
+        chosenMonster = floor(random(0, monsterList.length));
+      }
+      if (chosenMonster === 1) {
+        damageToMonsterOne += cardInHand.cardEffectValue;
+      }
+      else if (chosenMonster === 2) {
+        damageToMonsterTwo += cardInHand.cardEffectValue;
+      }
+      else if (chosenMonster === 3) {
+        damageToMonsterThree += cardInHand.cardEffectValue;
+      }
     }
   }
   else if (cardInHand.cardTargetType === "AOE") {
     if (cardInHand.cardEffectType === "damage") {
-      for (let i =0; i < monsterList.length; i++) {
-        monsterList[i].monsterHealth -= cardInHand.cardEffectValue;
-      }
+      damageToMonsterOne += cardInHand.cardEffectValue;
+      damageToMonsterTwo += cardInHand.cardEffectValue;
+      damageToMonsterThree += cardInHand.cardEffectValue;
     }
   }
   else if (cardInHand.cardTargetType === "none") {
@@ -651,7 +725,14 @@ function playCard() {
       armor += cardInHand.cardEffectValue;
     }
   }
-
+  let damageToMonsterList = [damageToMonsterOne, damageToMonsterTwo, damageToMonsterThree];
+  for (let i = 0; i < monsterList.length; i++) {
+    let damageRemainder = damageToMonsterList[i] - monsterList[i].monsterArmor;
+    monsterList[i].monsterArmor -= damageToMonsterList[i];
+    if (damageRemainder > 0) {
+      monsterList[i].monsterHealth -= damageRemainder;
+    }
+  }
 }
 
 function discardCard() {
@@ -668,6 +749,23 @@ function discardCard() {
   cardList[cardHandList.length].cardEffectType  = "";
   cardList[cardHandList.length].cardSubtype     = "";
   cardList[cardHandList.length].cardEffectValue = "";
+}
+
+function discardHand() {
+  for (let i = 0; i < cardHandList.length; i++) {
+    cardDiscardDeckList.push(cardHandList[i]);
+    cardList[i].cardInfo = {}; 
+    cardList[i].cardColor       = "";
+    cardList[i].cardCost        = "";
+    cardList[i].cardName        = "";
+    cardList[i].cardText        = "";
+    cardList[i].cardRarity      = "";
+    cardList[i].cardEffectType  = "";
+    cardList[i].cardSubtype     = "";
+    cardList[i].cardEffectValue = "";
+  }
+  cardHandList = [];
+  assignHandValues();
 }
 
 function assignHandValues() {
@@ -720,19 +818,17 @@ function playerTurn() {
 }
 
 function upkeepStep() {
+  if (!monsterOne.isAlive && !monsterTwo.isAlive && !monsterThree.isAlive) {
+    monstersSpawned = false;
+  }
   mana = maxMana - manaDebuff;
   manaDebuff = 0;
   armor = 0;
   turnCounter += 1;
-  health -= burn;
-  if (burn > 0) {
-    burn -= 1;
-  }
-  for (let i = 0; i < monsterList.length; i++) {
-    monsterList[i].monsterSpikes = 0;
-    monsterList[i].monsterArmor = 0;
-  }
   stanceAction();
+  if (health <= 0) {
+    gameState = "gameOver";
+  }
 }
 
 function drawStep() {
@@ -743,12 +839,18 @@ function drawStep() {
   else {
     drawCard(4);
   }
+  if (health <= 0) {
+    gameState = "gameOver";
+  }
 }
 
 function playStep() {
   if (endTurnButton.isClicked() && ButtonReady) {
     ButtonReady = false;
     turnPhase = "end";
+  }
+  if (health <= 0) {
+    gameState = "gameOver";
   }
 }
 
@@ -757,15 +859,33 @@ function endStep() {
     cardDiscardDeckList.push(cardHandList[i]);
   }
   cardHandList = [];
+  if (health <= 0) {
+    gameState = "gameOver";
+  }
+  health -= burn;
+  if (burn > 0) {
+    burn -= 1;
+  }
 }
 
 function enemyTurn() {
   for (let i = 0; i < monsterList.length; i++) {
-    monsterList[i].monsterAttack();
-    monsterList[i].selectedAttack = monsterList[i].monsterAttacks[floor(random(0, monsterList[i].monsterAttacks.length))];
+    monsterList[i].monsterSpikes = 0;
+    monsterList[i].monsterArmor = 0;
+    monsterList[i].monsterMaxArmor = 0;
+  }
+  for (let i = 0; i < monsterList.length; i++) {
+    if (monsterList[i].isAlive) {
+      monsterList[i].monsterAttack();
+      monsterList[i].selectedAttack = monsterList[i].monsterAttacks[floor(random(0, monsterList[i].monsterAttacks.length))];
+    }
   }
   turnPhase = "upkeep";
+  if (health <= 0) {
+    gameState = "gameOver";
+  }
 }
+
 //defines the class used for the card's behavior
 class Card {
 
@@ -899,6 +1019,7 @@ class Button {
     if (this.isClicked() && !playingSound && ButtonReady) {
       buttonClick.play();
     }
+    textAlign(CENTER);
     fill(this.textColour);
     textSize(this.buttonTextSize);
     text(this.buttonText, this.x, this.y + this.buttonTextSize/3);
@@ -920,6 +1041,7 @@ class Monster {
   constructor() {
     this.xPosition = 0;
     this.yPosition = 0;
+    this.isAlive = true;
   }
 
   displayStats() {
@@ -933,11 +1055,26 @@ class Monster {
       textSize(40);
       text(this.monsterHealth + "/" + this.monsterMaxHealth, this.xPosition, this.yPosition + 162);
     }
+    else if (this.monsterHealth <= 0) {
+      this.isAlive = false;
+      gold += this.monsterGold;
+    }
+
+    if (this.monsterArmor > 0) {
+      fill("black");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 75, monsterImageX - 40, 40);
+      fill("dodgerblue");
+      rect(this.xPosition - monsterImageX/2 + 20, this.yPosition + monsterImageY/2 + 75, (monsterImageX - 40)/this.monsterMaxArmor * this.monsterArmor, 40);
+      fill("white");
+      textSize(40);
+      text(this.monsterArmor + "/" + this.monsterMaxArmor, this.xPosition, this.yPosition + 218);
+    }
   }
 
   displayMonster() {
-    if (this.monsterHealth > 0) { 
+    if (this.isAlive) { 
       image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
+      
     }
   }
 
@@ -976,8 +1113,16 @@ class Monster {
     if (this.monsterHealth <= this.monsterMaxHealth - monsterHeal) {
       this.monsterHealth += monsterHeal;
     }
-    health -= damageToPlayer;
+    else {
+      this.monsterHealth = this.monsterMaxHealth;
+    }
+    let damageRemainder = damageToPlayer - armor;
+    armor -= damageToPlayer;
+    if (damageRemainder > 0) {
+      health -= damageRemainder;
+    }
     this.monsterArmor += monsterArmorGain;
+    this.monsterMaxArmor = monsterArmorGain;
     this.monsterSpikes = monsterSpikesGain;
   }
 
@@ -1029,8 +1174,10 @@ class Monster {
   }
 
   behavior() {
-    this.displayStats();
-    this.displayMonster();
-    this.displayIntent();
+    if (this.isAlive) {
+      this.displayStats();
+      this.displayMonster();
+      this.displayIntent();
+    }
   }
 }

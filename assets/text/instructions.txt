@@ -1,0 +1,3 @@
+Your goal is to defeat as many monsters as you can before they defeat you. Defeating monsters gains you gold, representing your score for the game.
+Each turn you draw a hand of four cards from your deck, and playing cards discards them. When you run out of cards from your deck, your discard shuffles into your empty deck.
+After your turn, the monsters will attack you with whatever intent that is shown above them. There are a variety of different attacks monsters can perform:
