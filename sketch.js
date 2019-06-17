@@ -264,6 +264,10 @@ function displayInstructions() {
     textAlign(LEFT);
     image(optionsBackground, width/2, height/2, width, height);
     backPlayButton.show();
+    // set colour transparent gray
+    fill(128,128,128,120);
+    // make rectangle at 100,300 of size 100,100
+    rect(100, 300, 100, 100);
     fill("turquoise");
     text(instructionsText[0], width/2, height/2 - 200, width - 100, 200);
     text(instructionsText[1], width/2, height/2 - 100, width - 100, 200);
