@@ -1,0 +1,3 @@
+Considering the entire project, I believe that it went about as well as I could have hoped. I had never programmed a project to that extent, and I was worried that I wouldn't be able to complete it before the end of the year.
+A common coding problem I encountered was turning values in an array into physical and interactable objects for the user. However, the challenge was fun nonetheless, which I am happy I had overcome.
+A mechanical issue I had encountered was coding my project on a bunch of different machines, each of which had monitors 

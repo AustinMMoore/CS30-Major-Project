@@ -265,14 +265,14 @@ function displayInstructions() {
     image(optionsBackground, width/2, height/2, width, height);
     backPlayButton.show();
     // set colour transparent gray
-    fill(128,128,128,120);
+    fill(128, 128, 128, 120);
     // make rectangle at 100,300 of size 100,100
     rect(100, 300, 100, 100);
     fill("turquoise");
     text(instructionsText[0], width/2, height/2 - 200, width - 100, 200);
     text(instructionsText[1], width/2, height/2 - 100, width - 100, 200);
     text(instructionsText[2], width/5, height/2, width/2 - 110, 200);
-    image(instructionsSheet, width/2 + 275, height/2 + 200, 800, 640);
+    image(instructionsSheet, width/2 + 275, height/2 + 200, width, 640 * (4/5));
     if (backPlayButton.isClicked() && ButtonReady) {
       gameState = "options";
     }
@@ -499,7 +499,7 @@ function spawnMonsters() {
     }
 
     for (let i = 0; i < 3; i++) {
-      let randomTypeNumber = floor(random(1, monsterTypeList.length));
+      let randomTypeNumber = floor(random(0, monsterTypeList.length));
       monsterList[i].xPosition = monsterLocationList[i].x;
       monsterList[i].yPosition = monsterLocationList[i].y;
 
