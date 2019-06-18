@@ -1,12 +1,95 @@
 // Chamber of Echoes
 // Austin Moore
 // March 5th 2019
-//
-// Extra for Experts:
-// - Full use of class system in buttons and cards
-// - Used array to choose card colour randomly
-// - Sound implemented (background music and button click)
 
+
+//setup all the variables
+let cardWidth = 150;
+let cardHeight = 240;
+let cardScalar = 1;
+let cardIsInHand = false;
+let cardInHand;
+let draggingCardID;
+
+let gameState = "menu";
+let buttonTextSize;
+
+let soundMute = false;
+let soundVolume = 0.5;
+let playingSound = false;
+let ButtonReady = true;
+
+let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
+
+let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
+
+let whiteCard, blueCard, greenCard, redCard, yellowCard, purpleCard, cardBack;
+let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
+let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
+let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
+let cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
+let cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
+let cardDisplayMap = new Map();
+let deckLocation;
+
+let playButton, optionsButton, quitButton, instructionsButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton, continueButtonNo, continueButtonYes;
+let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
+
+let standardCursor, targetCursor;
+let cursorSpriteList;
+let cursorMode = "standard";
+
+let manaStar, goldBag, armorShield, healthHeart, playerBurn;
+let enemyArmor, enemyAttack, enemyBuff, enemyDebuff, enemyHeal;
+let enemyIntentIconSize = 100;
+let manaStarPosition, goldBagPosition, armorShieldPosition, healthHeartPosition;
+let manaStarSize    = 100;
+let goldBagSize     = 100;
+let armorShieldSize = 100;
+let healthHeartSize = 100;
+let playerBurnSize  = 100;
+
+let mana = 0;
+let maxMana = 3;
+let manaDebuff = 0;
+let gold = 0;
+let armor = 0;
+let health = 100;
+let burn = 0;
+
+let intentArmor, intentHeal, intentDamage;
+
+let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
+let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
+let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
+let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
+let monsterOne, monsterTwo, monsterThree;
+
+let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
+let monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
+let monsterList = [monsterOne, monsterTwo, monsterThree];
+
+let monstersSpawned = false;
+let monsterType;
+let monsterImageX;
+let monsterImageY;
+
+let heavyAttack, lightAttack, flay, fanOfBlades;
+let block, armorUp, shieldToss;
+let manaBurst;
+let phalanxStance, spiritStance, berserkerStance;
+let replenish;
+
+let currentStanceTarget, currentStanceEffect, currentStanceValue;
+let cardDeckList = [];
+let cardDiscardDeckList = [];
+let cardHandList = [];
+
+let turnCounter = 0;
+let turnPhase = "upkeep";
+
+let instructionsText;
+let instructionsSheet;
 
 //Preloads the sound (mp3) and image (png) files used
 function preload() {
@@ -85,7 +168,7 @@ function setup() {
   cardSetup();
   monsterSetup();
 
-  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay, shieldToss, shieldToss, phalanxStance, spiritStance, berserkerStance, manaBurst, fanOfBlades];
+  cardDeckList = [lightAttack, lightAttack, block, block, armorUp, armorUp, heavyAttack, heavyAttack, flay, phalanxStance, spiritStance, berserkerStance, manaBurst, fanOfBlades, replenish];
 
   cursorSpriteList = [standardCursor, targetCursor];
 
@@ -94,92 +177,6 @@ function setup() {
   armorShieldPosition = {x: width * 3/15 - 30, y: height * 13/15};
   healthHeartPosition = {x: width * 4/15 - 30, y: height * 13/15};
 }
-
-//setup all the variables
-let cardWidth = 150;
-let cardHeight = 240;
-let cardScalar = 1;
-let cardIsInHand = false;
-let cardInHand;
-let draggingCardID;
-
-let gameState = "menu";
-let buttonTextSize;
-
-let soundMute = false;
-let soundVolume = 0.5;
-let playingSound = false;
-let ButtonReady = true;
-
-let backgroundMusic, buttonClick, cardPickUp, cardDraw, deckShuffle;
-
-let menuBackground, dungeonBackgroundOne, dungeonBackgroundTwo, forestBackgroundOne, optionsBackground;
-
-let whiteCard, blueCard, greenCard, redCard, yellowCard, purpleCard, cardBack;
-let cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven;
-let cardInfoOne, cardInfoTwo, cardInfoThree, cardInfoFour, cardInfoFive, cardInfoSix, cardInfoSeven;
-let cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven;
-let cardLocationList = [cardLocationOne, cardLocationTwo, cardLocationThree, cardLocationFour, cardLocationFive, cardLocationSix, cardLocationSeven];
-let cardList = [cardOne, cardTwo, cardThree, cardFour, cardFive, cardSix, cardSeven];
-let cardDisplayMap = new Map();
-let deckLocation;
-
-let playButton, optionsButton, quitButton, instructionsButton, soundOptionButton, backOptionButton, backPlayButton, endTurnButton, continueButtonNo, continueButtonYes;
-let blueButton, blueButtonClicked, greenButton, greenButtonClicked, yellowButton, yellowButtonClicked, yellowSmallButton, yellowSmallButtonClicked;
-
-let standardCursor, targetCursor;
-let cursorSpriteList;
-let cursorMode = "standard";
-
-let manaStar, goldBag, armorShield, healthHeart, playerBurn;
-let enemyArmor, enemyAttack, enemyBuff, enemyDebuff, enemyHeal;
-let enemyIntentIconSize = 100;
-let manaStarPosition, goldBagPosition, armorShieldPosition, healthHeartPosition;
-let manaStarSize    = 100;
-let goldBagSize     = 100;
-let armorShieldSize = 100;
-let healthHeartSize = 100;
-let playerBurnSize  = 100;
-
-let mana = 0;
-let maxMana = 3;
-let manaDebuff = 0;
-let gold = 0;
-let armor = 0;
-let health = 100;
-let burn = 0;
-
-let intentArmor, intentHeal, intentDamage;
-
-let chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster;
-let chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage;
-let monsterSpriteList = [chomperMonsterImage, blueBeanMonsterImage, spikySlimeMonsterImage, dizzyMonsterImage, fireDemonMonsterImage];
-let monsterLocationOne, monsterLocationTwo, monsterLocationThree;
-let monsterOne, monsterTwo, monsterThree;
-
-let monsterLocationList = [monsterLocationOne, monsterLocationTwo, monsterLocationThree];
-let monsterTypeList = [chomperMonster, blueBeanMonster, spikySlimeMonster, dizzyMonster, fireDemonMonster];
-let monsterList = [monsterOne, monsterTwo, monsterThree];
-
-let monstersSpawned = false;
-let monsterType;
-let monsterImageX;
-let monsterImageY;
-
-let heavyAttack, lightAttack, flay, fanOfBlades;
-let block, armorUp, shieldToss;
-let manaBurst;
-let phalanxStance, spiritStance, berserkerStance;
-let currentStanceTarget, currentStanceEffect, currentStanceValue;
-let cardDeckList = [];
-let cardDiscardDeckList = [];
-let cardHandList = [];
-
-let turnCounter = 0;
-let turnPhase = "upkeep";
-
-let instructionsText;
-let instructionsSheet;
 
 //main draw loop of the code
 function draw() {
@@ -267,12 +264,12 @@ function displayInstructions() {
     // set colour transparent gray
     fill(128, 128, 128, 120);
     // make rectangle at 100,300 of size 100,100
-    rect(100, 300, 100, 100);
+    rect(width/2, height/2 + 80, width - 80, height - 160);
     fill("turquoise");
     text(instructionsText[0], width/2, height/2 - 200, width - 100, 200);
     text(instructionsText[1], width/2, height/2 - 100, width - 100, 200);
-    text(instructionsText[2], width/5, height/2, width/2 - 110, 200);
-    image(instructionsSheet, width/2 + 275, height/2 + 200, width, 640 * (4/5));
+    text(instructionsText[2], width/5 + 55, height/2 + 200, width/2 - 120, 200);
+    image(instructionsSheet, width/2 + 275, height/2 + 200, width/3 + 275, width * (4/15) + 275);
     if (backPlayButton.isClicked() && ButtonReady) {
       gameState = "options";
     }
@@ -283,6 +280,8 @@ function displayInstructions() {
 function displayGameOver() {
   if (gameState === "gameOver") {
     image(dungeonBackgroundOne, width/2, height/2, width, height);
+    fill("gold");
+    text("Your total gold earned was: " + gold, width/2, height/3);
     fill("white");
     text("You were defeated, but there are always more monsters to defeat. Continue fighting?", width/2, height/2);
     continueButtonYes.show();
@@ -299,7 +298,11 @@ function displayGameOver() {
 
 function resetGame() {
   monstersSpawned = false;
+  currentStanceEffect = "";
+  currentStanceTarget = "";
+  currentStanceValue = "";
   health = 100;
+  armor = 0;
   burn = 0;
   gold = 0;
   mana = 3;
@@ -371,21 +374,23 @@ function cardSetup() {
   deckLocation = {x: width * (13/15), y: height * (3/4)};
 }
 
+//sets up the created cards in objects for assignment
 function cardStatSetup() {
   // {color: "", cost: , name: "", text: "", rarity: "", type: "", targetType: "", effectType: "", effectValue: , effectSubtype: "", effectSubtypeValue: };
-  lightAttack     = {color: "red",    cost: 1,   name: "Light Attack",     text: "Deal 5 damage.",                                        rarity: "base",   type: "attack", targetType: "single", effectType: "damage",  effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
-  heavyAttack     = {color: "red",    cost: 2,   name: "Heavy Attack",     text: "Deal 10 damage.",                                       rarity: "base",   type: "attack", targetType: "single", effectType: "damage",  effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
-  flay            = {color: "red",    cost: 1,   name: "Flay",             text: "Deal 10 damage to a random enemy.",                     rarity: "common", type: "attack", targetType: "random", effectType: "damage",  effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
-  berserkerStance = {color: "red",    cost: 3,   name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.",          rarity: "rare",   type: "stance", targetType: "random", effectType: "damage",  effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
-  block           = {color: "white",  cost: 1,   name: "Block",            text: "Gain 5 armor.",                                         rarity: "base",   type: "defend", targetType: "none",   effectType: "armor",   effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
-  armorUp         = {color: "white",  cost: 2,   name: "Armor Up",         text: "Gain 10 armor",                                         rarity: "common", type: "defend", targetType: "none",   effectType: "armor",   effectValue: 10, effectSubtype: "",      effectSubtypeValue: 0};
-  shieldToss      = {color: "white",  cost: 2,   name: "Shield Toss",      text: "Deal 5 damage, gain 5 armor",                           rarity: "common", type: "defend", targetType: "single", effectType: "damage",  effectValue: 10, effectSubtype: "armor", effectSubtypeValue: 5};
-  phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   type: "stance", targetType: "none",   effectType: "armor",   effectValue: 5,  effectSubtype: "",      effectSubtypeValue: 0};
-  spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   type: "stance", targetType: "none",   effectType: "mana",    effectValue: 1,  effectSubtype: "",      effectSubtypeValue: 0};
-  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 2x that much to each enemy.", rarity: "common", type: "spell",  targetType: "AOE",    effectType: "damage",  effectValue: 3,  effectSubType: "",      effectSubtypeValue: 0};
-  fanOfBlades     = {color: "red",    cost: 2,   name: "Fan of Blades",    text: "Deal 3 damage to each enemy.",                          rarity: "common", type: "attack", targetType: "AOE",    effectType: "damage",  effectValue: 3,  effectSubtype: "",      effectSubtypeValue: 0};
+  lightAttack     = {color: "red",    cost: 1,   name: "Light Attack",     text: "Deal 5 damage.",                                        rarity: "base",   type: "attack", targetType: "single", effectType: "damage",  effectValue: 5};
+  heavyAttack     = {color: "red",    cost: 2,   name: "Heavy Attack",     text: "Deal 10 damage.",                                       rarity: "base",   type: "attack", targetType: "single", effectType: "damage",  effectValue: 10};
+  flay            = {color: "red",    cost: 1,   name: "Flay",             text: "Deal 10 damage to a random enemy.",                     rarity: "common", type: "attack", targetType: "random", effectType: "damage",  effectValue: 10};
+  berserkerStance = {color: "red",    cost: 3,   name: "Berserker Stance", text: "Every turn, deal 5 damage to a random enemy.",          rarity: "rare",   type: "stance", targetType: "random", effectType: "damage",  effectValue: 5};
+  block           = {color: "white",  cost: 1,   name: "Block",            text: "Gain 5 armor.",                                         rarity: "base",   type: "defend", targetType: "none",   effectType: "armor",   effectValue: 5};
+  armorUp         = {color: "white",  cost: 2,   name: "Armor Up",         text: "Gain 10 armor",                                         rarity: "common", type: "defend", targetType: "none",   effectType: "armor",   effectValue: 10};
+  phalanxStance   = {color: "white",  cost: 3,   name: "Phalanx Stance",   text: "Every turn, you gain 5 armor.",                         rarity: "rare",   type: "stance", targetType: "none",   effectType: "armor",   effectValue: 5};
+  spiritStance    = {color: "purple", cost: 3,   name: "Spirit Stance",    text: "Every Turn, you gain 1 mana.",                          rarity: "rare",   type: "stance", targetType: "none",   effectType: "mana",    effectValue: 1};
+  manaBurst       = {color: "purple", cost: "X", name: "Mana Burst",       text: "Spend all your mana, deal 3x that much to each enemy.", rarity: "common", type: "spell",  targetType: "AOE",    effectType: "damage",  effectValue: 3};
+  fanOfBlades     = {color: "red",    cost: 2,   name: "Fan of Blades",    text: "Deal 4 damage to each enemy.",                          rarity: "common", type: "attack", targetType: "AOE",    effectType: "damage",  effectValue: 4};
+  replenish       = {color: "green",  cost: 2,   name: "Replenish",        text: "Heal 8 damage from yourself.",                          rarity: "common", type: "spell",  targetType: "none",   effectType: "heal",    effectValue: 8};
 }
 
+//sets up all the values for the monsters
 function monsterSetup() {
   monsterLocationOne   = {x: width * (1/3) - 50, y: height * (1/3)};
   monsterLocationTwo   = {x: width * (1/2), y: height * (9/32)};
@@ -406,8 +411,6 @@ function monsterSetup() {
     monsterList[i].xPosition = monsterLocationList[i].x;
     monsterList[i].yPosition = monsterLocationList[i].y;
   }
-
-  //name, imageNumber, health, gold, monsterAttacks
 
   chomperMonster    = {name: "Chomper",     image: chomperMonsterImage,    health: 25, gold: 55, monsterAttacks: ["Bite", "Consume",  "Defend"]};
   blueBeanMonster   = {name: "Blue Bean",   image: blueBeanMonsterImage,   health: 20, gold: 50, monsterAttacks: ["Bite", "Heal",     "Defend"]};
@@ -461,12 +464,14 @@ function checkMute() {
   deckShuffle.setVolume(soundVolume);
 }
 
+//devKey for quickly spawning monsters
 function keyPressed() {
   if (key === "s" || key === "S") {
     monstersSpawned = false;
   }
 }
 
+//creates the cursor on the mouse and changes the sprite
 function cursorUpdate() {
   imageMode(CORNER);
   if (cardIsInHand && monsterIsSelected() && cardInHand.cardTargetType === "single") {
@@ -489,6 +494,7 @@ function cursorUpdate() {
   imageMode(CENTER);
 }
 
+//spawns three monsters when triggered
 function spawnMonsters() {
   if (!monstersSpawned) {
     for (let i = 0; i < monsterList.length; i++) {
@@ -519,6 +525,7 @@ function spawnMonsters() {
   monstersSpawned = true;
 }
 
+//checks if the mouse is over monsterOne
 function monsterOneSelected() {
   if (mouseX >= monsterLocationOne.x - monsterImageX/2 && mouseX <= monsterLocationOne.x + monsterImageX/2 && mouseY >= monsterLocationOne.y - monsterImageY/2 && mouseY <= monsterLocationOne.y + monsterImageY/2) {
     return true;
@@ -528,6 +535,7 @@ function monsterOneSelected() {
   }
 }
 
+//checks if the mouse is over monsterTwo
 function monsterTwoSelected() {
   if (mouseX >= monsterLocationTwo.x - monsterImageX/2 && mouseX <= monsterLocationTwo.x + monsterImageX/2 && mouseY >= monsterLocationTwo.y - monsterImageY/2 && mouseY <= monsterLocationTwo.y + monsterImageY/2) {
     return true;
@@ -537,6 +545,7 @@ function monsterTwoSelected() {
   }
 }
 
+//checks if the mouse is over monsterThree
 function monsterThreeSelected() {
   if (mouseX >= monsterLocationThree.x - monsterImageX/2 && mouseX <= monsterLocationThree.x + monsterImageX/2 && mouseY >= monsterLocationThree.y - monsterImageY/2 && mouseY <= monsterLocationThree.y + monsterImageY/2) {
     return true;
@@ -546,6 +555,7 @@ function monsterThreeSelected() {
   }
 }
 
+//checks if the mouse is over any monster
 function monsterIsSelected() {
   if (monsterOneSelected() || monsterTwoSelected() || monsterThreeSelected()) {
     return true;
@@ -555,6 +565,7 @@ function monsterIsSelected() {
   }
 }
 
+//checks which monster the mouse is over
 function selectedMonster() {
   if (monsterOneSelected()) {
     return monsterList[0];
@@ -567,11 +578,13 @@ function selectedMonster() {
   }
 }
 
+//shuffles the contents of the deck
 function shuffleDeck() {
   cardDeckList = shuffle(cardDeckList);
   deckShuffle.play();
 }
 
+//shuffles the discard and deck together
 function reshuffleDeck() {
   cardDeckList.push(cardDiscardDeckList);
   shuffle(cardDeckList, true);
@@ -579,6 +592,7 @@ function reshuffleDeck() {
   deckShuffle.play();
 }
 
+//applies the passive effect of whichever stance is currently active
 function stanceAction() {
   if (currentStanceTarget === "random") {
     if (currentStanceEffect === "damage") {
@@ -602,6 +616,7 @@ function stanceAction() {
   }
 }
 
+//displays all the stats of the player
 function displayPlayerStats() {
   textSize(25);
   image(manaStar, manaStarPosition.x, manaStarPosition.y, manaStarSize, manaStarSize);
@@ -665,8 +680,11 @@ function drawCard(drawNumber) {
   assignHandValues();
 }
 
+//plays the card in the player's hand, triggering its effects
 function playCard() {
-  let xCost = mana;
+  monsterList = [monsterOne, monsterTwo, monsterThree];
+  let xCost = 0;
+  let xCostEffectValue = 0;
   let damageToMonsterOne = 0;
   let damageToMonsterTwo = 0;
   let damageToMonsterThree = 0;
@@ -675,7 +693,9 @@ function playCard() {
     mana -= cardInHand.cardCost;
   }
   else if (cardInHand.cardCost === "X") {
+    xCost = mana;
     mana = 0;
+    xCostEffectValue = xCost * cardInHand.cardEffectValue;
   }
   else {
     beep("Invalid cost");
@@ -686,6 +706,14 @@ function playCard() {
     currentStanceTarget = cardInHand.cardTargetType;
     currentStanceEffect = cardInHand.cardEffectType;
     currentStanceValue  = cardInHand.cardEffectValue;
+  }
+  else if (cardInHand.cardTargetType === "none") {
+    if (cardInHand.cardEffectType === "armor") {
+      armor += cardInHand.cardEffectValue;
+    }
+    else if (cardInHand.cardEffectType === "heal") {
+      health += cardInHand.cardEffectValue;
+    }
   }
   else if (cardInHand.cardTargetType === "single") {
     if (cardInHand.cardEffectType === "damage") {
@@ -702,9 +730,9 @@ function playCard() {
   }
   else if (cardInHand.cardTargetType === "random") {
     if (cardInHand.cardEffectType === "damage") {
-      let chosenMonster = floor(random(0, monsterList.length));
-      while (!monsterList[chosenMonster].isAlive) {
-        chosenMonster = floor(random(0, monsterList.length));
+      let chosenMonster = floor(random(1, monsterList.length + 1));
+      while (!monsterList[chosenMonster-1].isAlive) {
+        chosenMonster = floor(random(1, monsterList.length + 1));
       }
       if (chosenMonster === 1) {
         damageToMonsterOne += cardInHand.cardEffectValue;
@@ -718,27 +746,39 @@ function playCard() {
     }
   }
   else if (cardInHand.cardTargetType === "AOE") {
-    if (cardInHand.cardEffectType === "damage") {
+    if (cardInHand.cardEffectType === "damage" && cardInHand.cardCost === "X") {
+      damageToMonsterOne += xCostEffectValue;
+      damageToMonsterTwo += xCostEffectValue;
+      damageToMonsterThree += xCostEffectValue;
+    }
+    else if (cardInHand.cardEffectType === "damage") {
       damageToMonsterOne += cardInHand.cardEffectValue;
       damageToMonsterTwo += cardInHand.cardEffectValue;
       damageToMonsterThree += cardInHand.cardEffectValue;
     }
   }
-  else if (cardInHand.cardTargetType === "none") {
-    if (cardInHand.cardEffectType === "armor") {
-      armor += cardInHand.cardEffectValue;
-    }
-  }
+
   let damageToMonsterList = [damageToMonsterOne, damageToMonsterTwo, damageToMonsterThree];
+  let damageRemainder = 0;
   for (let i = 0; i < monsterList.length; i++) {
-    let damageRemainder = damageToMonsterList[i] - monsterList[i].monsterArmor;
-    monsterList[i].monsterArmor -= damageToMonsterList[i];
+    if (monsterList[i].monsterArmor < 0) {
+      monsterList[i].monsterArmor = 0;
+    }
+    if (damageToMonsterList[i] > 0) {
+      damageRemainder = damageToMonsterList[i] - monsterList[i].monsterArmor;
+      monsterList[i].monsterArmor -= damageToMonsterList[i];
+    }
     if (damageRemainder > 0) {
       monsterList[i].monsterHealth -= damageRemainder;
     }
+    beep("damageRemainder " + damageRemainder);
+    damageRemainder = 0;
   }
+  damageToMonsterList = [damageToMonsterOne, damageToMonsterTwo, damageToMonsterThree];
+  beep("damageList " + damageToMonsterList);
 }
 
+//discards the card that is in the player's hand into the discard
 function discardCard() {
   cardDiscardDeckList.push(cardHandList[draggingCardID-1]);
   cardList[cardHandList.length-1].cardInfo = {}; 
@@ -755,6 +795,7 @@ function discardCard() {
   cardList[cardHandList.length].cardEffectValue = "";
 }
 
+//discards the player's hand into the discard
 function discardHand() {
   for (let i = 0; i < cardHandList.length; i++) {
     cardDiscardDeckList.push(cardHandList[i]);
@@ -772,6 +813,7 @@ function discardHand() {
   assignHandValues();
 }
 
+//assigns the values of the array onto the physical cards
 function assignHandValues() {
   for (let i = 0; i < cardHandList.length; i++) {
     cardList[i].cardInfo = cardHandList[i];
@@ -795,7 +837,7 @@ function assignHandValues() {
   }
 }
 
-
+//the steps of the player's turn
 /* 
 - upkeepStep
 - drawStep
@@ -821,6 +863,7 @@ function playerTurn() {
   }
 }
 
+//the phase to trigger the passive effects of the game
 function upkeepStep() {
   if (!monsterOne.isAlive && !monsterTwo.isAlive && !monsterThree.isAlive) {
     monstersSpawned = false;
@@ -835,6 +878,7 @@ function upkeepStep() {
   }
 }
 
+//draws the new hand of cards, shuffling the deck if need be
 function drawStep() {
   if (turnCounter === 1) {
     shuffleDeck();
@@ -848,6 +892,7 @@ function drawStep() {
   }
 }
 
+//the phase where the player can play their cards against the monsters
 function playStep() {
   if (endTurnButton.isClicked() && ButtonReady) {
     ButtonReady = false;
@@ -858,6 +903,7 @@ function playStep() {
   }
 }
 
+//the cleaning up phase for the turn
 function endStep() {
   for (let i = 0; i < cardHandList.length; i++) {
     cardDiscardDeckList.push(cardHandList[i]);
@@ -872,6 +918,7 @@ function endStep() {
   }
 }
 
+//the monster's turn where they each attack the player and gain new intents
 function enemyTurn() {
   for (let i = 0; i < monsterList.length; i++) {
     monsterList[i].monsterSpikes = 0;
@@ -971,10 +1018,12 @@ class Card {
     return this.isSelected() && mouseIsPressed;
   }
 
+  //sets up the card info
   setupCardInfo() {
     this.cardInfo = ["empty"];
   }
 
+  //shows all of the characteristics of the card
   showCardInfo() {
     rectMode(CENTER);
     fill(0);
@@ -1029,7 +1078,7 @@ class Button {
     text(this.buttonText, this.x, this.y + this.buttonTextSize/3);
   }
 
-  //funcion that returns if it is moused over and not clicked
+  //function that returns if it is moused over and not clicked
   isSelected() {
     return mouseX >= this.x - this.width/2 && mouseX <= this.x + this.width/2 &&mouseY >= this.y - this.height/2 && mouseY <= this.y + this.height/2;
   }
@@ -1048,6 +1097,7 @@ class Monster {
     this.isAlive = true;
   }
 
+  //displays all the stats of the monster
   displayStats() {
     if (this.monsterHealth > 0) {
       rectMode(CORNER);
@@ -1075,13 +1125,15 @@ class Monster {
     }
   }
 
+  //displays the monster
   displayMonster() {
     if (this.isAlive) { 
       image(this.monsterImage, this.xPosition, this.yPosition, monsterImageX, monsterImageY);
       
     }
   }
-
+ 
+  //attacks the player with whatever intent the monster has
   monsterAttack() {
     let damageToPlayer = 0;
     let monsterHeal = 0;
@@ -1120,6 +1172,9 @@ class Monster {
     else {
       this.monsterHealth = this.monsterMaxHealth;
     }
+    if (armor < 0) {
+      armor = 0;
+    }
     let damageRemainder = damageToPlayer - armor;
     armor -= damageToPlayer;
     if (damageRemainder > 0) {
@@ -1130,6 +1185,7 @@ class Monster {
     this.monsterSpikes = monsterSpikesGain;
   }
 
+  //displays the monsters next attack
   displayIntent() {
     intentDamage = 0;
     intentHeal = 0;
@@ -1177,6 +1233,7 @@ class Monster {
     }
   }
 
+  //all of the behaviors of the monster
   behavior() {
     if (this.isAlive) {
       this.displayStats();

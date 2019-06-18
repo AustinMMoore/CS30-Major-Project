@@ -1,0 +1,13 @@
+April 16 - Initial commit to the new repository, moved in some previous work done before as a base layer.
+April 29 - Started working on the long task that was displaying cards and their info.
+May 1  - Began to debate renouncing computer science and living in a cardboard box, didn't quite go through with it.
+May 8  - Found a medium sized issue with displaying cards, began to look into new ways around it (VERY LONG WAYS).
+May 9  - Installed chrome debugger, the saving grace of my project and my sanity - Also used it to find another issue that was finally resolved.
+May 10 - Reworked my previous (not working) class system for my cards, which proved fruitful and actually showed signs of success.
+May 21-23 - Worked on the structure of the player's turn, made the turn structure for playing cards.
+May 24 - Cards became actually playable, which meant the beginning of actual testable gameplay (and made monsters have health).
+June 3 - Converted many arrays into objects for peace of mind, huge help for code readablility.
+June 3-5 - Started and completed work on card discarding, a huge element to the gameplay.
+June 6-13 - Worked on finalizing the shell of card editing and creation, so that cards can be easily added and edited for balance.
+June 15 - Added enemy attacks and intents, completing the loop of gameplay of PvE.
+June 18 - Finalized the project, looking ready for its hand-in!
